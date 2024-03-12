@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "ES2015", 
+        "module": "ES2015",  
+        "allowJs": true, // 允许引入js文件
+        "strict": true, // 开启严格模式
+        "baseUrl": "./",
+        "moduleResolution": "node", // 模块解析方式，按node的方式递归查找node_modulse
+        "outDir": "lib",
+        "sourceMap": true,
+        "declaration": true,
+        "noImplicitAny": false,
+        "noImplicitThis": true,
+        "allowSyntheticDefaultImports": true,
+        "lib": [
+            "ES2015",
+            "DOM",
+            "es5",
+            "es2015.promise",
+            "es2015",
+            "es2017",
+            "esnext"
+        ]
+    },
+    "include": [
+        "src/**/*",
+        "index.ts"
+    ],
+    "exclude": [
+        "node_modules",
+    ]
+}
