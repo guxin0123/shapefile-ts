@@ -8,7 +8,7 @@ Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapef
 
     npm install shapefile-ts --save
 
-	import shp from 'shapefile-ts';
+	import shp from 'shapefile-ts/lib/shp';
 
 ## API
 
