@@ -142,7 +142,7 @@ class ShpObject{
 
   getShapefile = async (base, whiteList,encoding?:string)=> {
     if (typeof base !== 'string') {
-      return this.parseZip(base);
+      return this.parseZip(base,whiteList,encoding);
     }
     if (this.checkSuffix(base, '.zip')) {
       return this.getZip(base, whiteList,encoding);

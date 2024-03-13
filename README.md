@@ -33,6 +33,9 @@ or if you got the zip some other way (like the [File API](https://developer.mozi
 
 ```javascript
 const geojson = await shp(buffer);
+// or ZIP uses a other codepage   GB18030
+const geojson = await shp(buffer,null,"GB18030");
+
 ```
 If there is only one shp in the zipefile it returns geojson, if there are multiple then it will be an array.  All of the geojson objects have an extra key `fileName` the value of which is the
 name of the shapefile minus the extension (I.E. the part of the name that's the same for all of them)
