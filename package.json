@@ -22,6 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "buffer": "^6.0.3",
+    "iconv-lite": "^0.6.3",
     "jszip": "^3.10.1",
     "lru-cache": "^10.2.0",
     "parsedbf": "^1.1.1",
