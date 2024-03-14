@@ -10,7 +10,7 @@ const cache = new Cache({
   max: 20
 });
 
-function toBuffer (b) {
+function toBuffer(b: any) {
   if (!b) {
     throw new Error('forgot to pass buffer');
   }
@@ -28,13 +28,13 @@ function toBuffer (b) {
   }
 }
 
-function isArrayBuffer (subject) {
+function isArrayBuffer(subject: any) {
   return subject instanceof ArrayBuffer || Object.prototype.toString.call(subject) === '[object ArrayBuffer]';
 }
-class ShpObject{
-  
-  combine =  ([shp, dbf])=> {
-    const out:{[key:string]:any} = {};
+class ShpObject {
+
+  combine = ([shp, dbf]) => {
+    const out: { [key: string]: any } = {};
     out.type = 'FeatureCollection';
     out.features = [];
     let i = 0;
@@ -52,11 +52,11 @@ class ShpObject{
     }
     return out;
   };
-  parseZip = async (buffer, whiteList?,encoding?:string) =>{
-    let key:string;
+  parseZip = async (buffer, whiteList?, encoding?: string) => {
+    let key: string;
     buffer = toBuffer(buffer);
-    const zip = await unzip(buffer,encoding);
-    const names:string[] = [];
+    const zip = await unzip(buffer, encoding);
+    const names: string[] = [];
     whiteList = whiteList || [];
     for (key in zip) {
       if (key.indexOf('__MACOSX') !== -1) {
@@ -76,7 +76,7 @@ class ShpObject{
     if (!names.length) {
       throw new Error('no layers founds');
     }
-    const geojson = names.map( (name:string) =>{
+    const geojson = names.map((name: string) => {
       let parsed, dbf;
       const lastDotIdx = name.lastIndexOf('.');
       if (lastDotIdx > -1 && name.slice(lastDotIdx).indexOf('json') > -1) {
@@ -102,9 +102,9 @@ class ShpObject{
   };
 
 
-  getZip = async  (base, whiteList,encoding?:string)=> {
+  getZip = async (base, whiteList, encoding?: string) => {
     const a = await binaryAjax(base);
-    return this.parseZip(a, whiteList,encoding);
+    return this.parseZip(a, whiteList, encoding);
   }
   handleShp = async (base) => {
     const args = await Promise.all([
@@ -124,7 +124,7 @@ class ShpObject{
 
 
 
-   handleDbf = async (base) => {
+  handleDbf = async (base) => {
     const [dbf, cpg] = await Promise.all([
       binaryAjax(base, 'dbf'),
       binaryAjax(base, 'cpg')
@@ -134,18 +134,18 @@ class ShpObject{
     }
     return parseDbf(dbf, cpg);
   };
-   checkSuffix = (base, suffix) => {
-    const url = new URL(location.href+base);
+  checkSuffix = (base, suffix) => {
+    const url = new URL(location.href + base);
     return url.pathname.slice(-4).toLowerCase() === suffix;
   };
 
 
-  getShapefile = async (base, whiteList,encoding?:string)=> {
+  getShapefile = async (base, whiteList, encoding?: string) => {
     if (typeof base !== 'string') {
-      return this.parseZip(base,whiteList,encoding);
+      return this.parseZip(base, whiteList, encoding);
     }
     if (this.checkSuffix(base, '.zip')) {
-      return this.getZip(base, whiteList,encoding);
+      return this.getZip(base, whiteList, encoding);
     }
     const results = await Promise.all([
       this.handleShp(base),
@@ -175,12 +175,12 @@ class ShpObject{
 }
 
 
-const shp = function (base, whiteList?,encoding?:string) {
-  const sp= new ShpObject();
+const shp = function (base, whiteList?, encoding?: string) {
+  const sp = new ShpObject();
   if (typeof base === 'string' && cache.has(base)) {
     return Promise.resolve(cache.get(base));
   }
-  return sp.getShapefile(base, whiteList,encoding).then(function (resp) {
+  return sp.getShapefile(base, whiteList, encoding).then(function (resp) {
     if (typeof base === 'string') {
       cache.set(base, resp);
     }
