@@ -1,4 +1,4 @@
-import shp from '../src/shp.ts'
+import shp from '../src/index.ts'
 
 var m = L.map('map').setView([34.74161249883172, 18.6328125], 2);
 var geo = L.geoJson({ features: [] }, {

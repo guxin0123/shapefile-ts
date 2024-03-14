@@ -10,6 +10,11 @@ Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapef
 
 	import shp from 'shapefile-ts/lib/shp';
 
+
+Or include directly in your webpage from:
+
+	https://unpkg.com/shapefile-ts@latest/lib/shp.umd.js
+
 ## API
 
 Has a function `shp` which accepts a string which is the path the she shapefile minus the extension and returns a promise which resolves into geojson.
