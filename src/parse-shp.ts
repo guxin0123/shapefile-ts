@@ -1,6 +1,12 @@
+import proj4 from "proj4";
 
 class ParseShp {
-  constructor(buffer, trans) {
+  parseFunc: any;
+  buffer: Uint8Array;
+  rows: any[] = [];
+
+
+  constructor(buffer: Uint8Array, trans: string | boolean | proj4.Converter) {
     this.buffer = buffer;
     this.headers = this.parseHeader();
     if (this.headers.length < this.buffer.byteLength) {
@@ -21,16 +27,14 @@ class ParseShp {
     15: 'parseZPolygon',
     18: 'parseZMultiPoint'
   };
-  parseFunc: any;
-  buffer: any;
-  rows: any[] = [];
 
 
-  isClockWise = (array) => {
+
+  isClockWise = (array: string | any[]) => {
     let sum = 0;
     let i = 1;
     const len = array.length;
-    let prev, cur;
+    let prev: any[], cur: any[];
     while (i < len) {
       prev = cur || array[0];
       cur = array[i];
@@ -40,7 +44,7 @@ class ParseShp {
     return sum > 0;
   }
 
-  polyReduce = (a, b) => {
+  polyReduce = (a: any[][], b: any) => {
     if (this.isClockWise(b) || !a.length) {
       a.push([b]);
     } else {
@@ -49,27 +53,29 @@ class ParseShp {
     return a;
   }
 
-  makeParseCoord = (trans) => {
+  makeParseCoord = (trans: string | boolean | proj4.Converter) => {
     if (trans) {
-      return function (data, offset) {
-        const args = [data.readDoubleLE(offset), data.readDoubleLE(offset + 8)];
-        return trans.inverse(args);
+      return function (data: Uint8Array, offset: number) {
+        var dataView = new DataView(data.buffer);
+        const args = [dataView.getFloat64(offset, true), dataView.getFloat64(offset + 8, true)];
+        return (trans as proj4.Converter).inverse(args);
       };
     } else {
-      return function (data, offset) {
-        return [data.readDoubleLE(offset), data.readDoubleLE(offset + 8)];
+      return function (data: Uint8Array, offset: number) {
+        var dataView = new DataView(data.buffer);
+        return [dataView.getFloat64(offset, true), dataView.getFloat64(offset + 8, true)];
       };
     }
   }
 
-  parsePoint=(data)=> {
+  parsePoint = (data: Uint8Array) => {
     return {
       type: 'Point',
       coordinates: this.parseCoord(data, 0)
     };
   };
 
-  shpFuncs(tran) {
+  shpFuncs(tran: string | boolean | proj4.Converter) {
     let num = this.headers.shpCode;
     if (num > 20) {
       num -= 20;
@@ -81,12 +87,13 @@ class ParseShp {
     this.parseCoord = this.makeParseCoord(tran);
   };
 
-  parseZPoint=(data)=> {
+  parseZPoint = (data: Uint8Array) => {
+    var dataView = new DataView(data.buffer);
     const pointXY = this.parsePoint(data);
-    pointXY.coordinates.push(data.readDoubleLE(16));
+    pointXY.coordinates.push(dataView.getFloat64(16, true));
     return pointXY;
   };
-  parsePointArray=(data, offset, num) =>{
+  parsePointArray = (data: Uint8Array, offset: number, num: number) => {
     const out: any[] = [];
     let done = 0;
     while (done < num) {
@@ -96,17 +103,19 @@ class ParseShp {
     }
     return out;
   };
-  parseZPointArray=(data, zOffset, num, coordinates) =>{
+  parseZPointArray = (data: Uint8Array, zOffset: number, num: number, coordinates: string | any[]) => {
+    var dataView = new DataView(data.buffer);
     let i = 0;
     while (i < num) {
-      coordinates[i].push(data.readDoubleLE(zOffset));
+      coordinates[i].push(dataView.getFloat64(zOffset, true));
       i++;
       zOffset += 8;
     }
     return coordinates;
   };
 
-  parseArrayGroup=(data, offset, partOffset, num, tot)=> {
+  parseArrayGroup = (data: Uint8Array, offset: number, partOffset: number, num: number, tot: number) => {
+    var dataView = new DataView(data.buffer);
     const out: any[] = [];
     let done = 0;
     let curNum; let nextNum = 0;
@@ -118,7 +127,7 @@ class ParseShp {
       if (done === num) {
         nextNum = tot;
       } else {
-        nextNum = data.readInt32LE(partOffset);
+        nextNum = dataView.getInt32(partOffset, true);
       }
       pointNumber = nextNum - curNum;
       if (!pointNumber) {
@@ -129,7 +138,7 @@ class ParseShp {
     }
     return out;
   };
-  parseZArrayGroup=(data, zOffset, num, coordinates) =>{
+  parseZArrayGroup = (data: Uint8Array, zOffset: number, num: number, coordinates: (string | any[])[]) => {
     let i = 0;
     while (i < num) {
       coordinates[i] = this.parseZPointArray(data, zOffset, coordinates[i].length, coordinates[i]);
@@ -138,12 +147,16 @@ class ParseShp {
     }
     return coordinates;
   };
-  parseMultiPoint=(data) =>{
+  parseMultiPoint = (data: Uint8Array) => {
+    var dataView = new DataView(data.buffer);
     const out: { [key: string]: any } = {};
-    const num = data.readInt32LE(32, true);
-    if (!num) {
+    let num = null;
+    try {
+      num = dataView.getInt32(32, true);
+    } catch (RangeError) {
       return null;
     }
+
     const mins = this.parseCoord(data, 0);
     const maxs = this.parseCoord(data, 16);
     out.bbox = [
@@ -162,14 +175,15 @@ class ParseShp {
     }
     return out;
   };
-  parseZMultiPoint=(data) =>{
+  parseZMultiPoint = (data: Uint8Array) => {
+    var dataView = new DataView(data.buffer);
     const geoJson = this.parseMultiPoint(data);
     if (!geoJson) {
       return null;
     }
-    let num;
+    let num: number;
     if (geoJson.type === 'Point') {
-      geoJson.coordinates.push(data.readDoubleLE(72));
+      geoJson.coordinates.push(dataView.getFloat64(72, true));
       return geoJson;
     } else {
       num = geoJson.coordinates.length;
@@ -178,9 +192,10 @@ class ParseShp {
     geoJson.coordinates = this.parseZPointArray(data, zOffset, num, geoJson.coordinates);
     return geoJson;
   };
-  parsePolyline=(data)=> {
+  parsePolyline = (data: Uint8Array) => {
+    var dataView = new DataView(data.buffer);
     const out: { [key: string]: any } = {};
-    const numParts = data.readInt32LE(32);
+    const numParts = dataView.getInt32(32, true);
     if (!numParts) {
       return null;
     }
@@ -192,8 +207,8 @@ class ParseShp {
       maxs[0],
       maxs[1]
     ];
-    const num = data.readInt32LE(36);
-    let offset, partOffset;
+    const num = dataView.getInt32(36, true);
+    let offset: number, partOffset: number;
     if (numParts === 1) {
       out.type = 'LineString';
       offset = 44;
@@ -206,13 +221,13 @@ class ParseShp {
     }
     return out;
   };
-  parseZPolyline=(data) =>{
+  parseZPolyline = (data: Uint8Array) => {
     const geoJson = this.parsePolyline(data);
     if (!geoJson) {
       return null;
     }
     const num = geoJson.coordinates.length;
-    let zOffset;
+    let zOffset: number;
     if (geoJson.type === 'LineString') {
       zOffset = 60 + (num << 4);
       geoJson.coordinates = this.parseZPointArray(data, zOffset, num, geoJson.coordinates);
@@ -228,7 +243,7 @@ class ParseShp {
   };
 
 
-  polyFuncs=(out) =>{
+  polyFuncs = (out: { [x: string]: any; type?: any; coordinates?: any; }) => {
     if (!out) {
       return out;
     }
@@ -248,33 +263,34 @@ class ParseShp {
       }
     }
   };
-  parsePolygon=(data)=> {
+  parsePolygon = (data: Uint8Array) => {
     return this.polyFuncs(this.parsePolyline(data));
   };
-  parseZPolygon=(data) =>{
+  parseZPolygon = (data: Uint8Array) => {
     return this.polyFuncs(this.parseZPolyline(data));
   };
 
 
 
-  getShpCode=() =>{
+  getShpCode = () => {
     return this.parseHeader().shpCode;
   };
-  parseHeader=() =>{
-    const view = this.buffer.slice(0, 100);
+  parseHeader = () => {
+    const view: Uint8Array = this.buffer.slice(0, 100);
+    var dataView = new DataView(view.buffer);
     return {
-      length: view.readInt32BE(6 << 2) << 1,
-      version: view.readInt32LE(7 << 2),
-      shpCode: view.readInt32LE(8 << 2),
+      length: dataView.getInt32(6 << 2) << 1,
+      version: dataView.getInt32(7 << 2, true),
+      shpCode: dataView.getInt32(8 << 2, true),
       bbox: [
-        view.readDoubleLE(9 << 2),
-        view.readDoubleLE(11 << 2),
-        view.readDoubleLE(13 << 2),
-        view.readDoubleLE(13 << 2)
+        dataView.getFloat64(9 << 2, true),
+        dataView.getFloat64(11 << 2, true),
+        dataView.getFloat64(13 << 2, true),
+        dataView.getFloat64(13 << 2, true)
       ]
     };
   };
-  getRows=() =>{
+  getRows = () => {
     let offset = 100;
     const len = this.buffer.byteLength;
     const out: any[] = [];
@@ -294,10 +310,11 @@ class ParseShp {
     }
     return out;
   };
-  getRow=(offset)=> {
-    const view = this.buffer.slice(offset, offset + 12);
-    const len = view.readInt32BE(4) << 1;
-    const id = view.readInt32BE(0);
+  getRow = (offset: number) => {
+    const view: Uint8Array = this.buffer.slice(offset, offset + 12);
+    var dataView = new DataView(view.buffer);
+    const len = dataView.getInt32(4) << 1;
+    const id = dataView.getInt32(0);
     if (len === 0) {
       return {
         id: id,
@@ -309,13 +326,13 @@ class ParseShp {
       id: id,
       len: len,
       data: this.buffer.slice(offset + 12, offset + len + 8),
-      type: view.readInt32LE(8)
+      type: dataView.getInt32(8, true)
     };
   };
 
 }
 
-function ParseShpFile(buffer, trans) {
+function ParseShpFile(buffer: Uint8Array, trans: string | boolean | proj4.Converter) {
   return new ParseShp(buffer, trans).rows;
 };
 export default ParseShpFile;

@@ -1,12 +1,12 @@
 {
   "name": "shapefile-ts",
-  "version": "1.0.7",
+  "version": "1.0.12",
   "repository": {
     "type": "git",
     "url": "https://github.com/guxin0123/shapefile-ts.git"
   },
   "description": "Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapefile-js",
-  "main": "./lib/index.js",
+  "main": "./lib/index.esm.js",
   "module": "./lib/index.esm.js",
   "umd": "./lib/shp.umd.js",
   "types": "./lib/types/index.d.ts",
@@ -20,9 +20,11 @@
   },
   "scripts": {
     "clean:dist": "rimraf lib dist",
-    "build:types": "npm run clean:dist && tsc -b ./tsconfig.types.json",
-    "build": "npm run build:types && rollup -c --bundleConfigAsCjs",
-    "test": "node test/test.js",
+    "build:types": "tsc -b ./tsconfig.types.json",
+    "build:es": "rollup --config rollup/rollup.esm.config.mjs",
+    "build:umd": "rollup --config rollup/rollup.umd.config.mjs",
+    "build:ALL": "npm run clean:dist && npm run build:types && npm run build:es &&npm run build:umd ",
+
     "pretest": "npm run build",
     "browser-test": "vite"
   },
@@ -35,11 +37,7 @@
   "author": "Gux",
   "license": "MIT",
   "dependencies": {
-    "buffer": "^6.0.3",
-    "iconv-lite": "^0.6.3",
-    "jszip": "^3.10.1",
-    "lru-cache": "^10.2.0",
-    "parsedbf": "^1.1.1",
+    "fflate": "^0.8.2",
     "proj4": "^2.10.0"
   },
   "devDependencies": {
@@ -49,15 +47,16 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/node": "^20.11.26",
+    "@types/proj4": "^2.5.5",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.13.0",
-    "rollup-plugin-polyfill-node": "^0.13.0",
+    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.23",
     "tslib": "^2.6.2",
     "typescript": "^5.4.2",
     "vite": "^5.1.6"

@@ -1,38 +1,11 @@
 import proj4 from 'proj4';
-import unzip from './unzip'
-import binaryAjax from './binaryajax-browser';
-import ParseShpFile from './parseShp';
-import parseDbf from 'parsedbf';
-import { LRUCache as Cache } from 'lru-cache';
-import { Buffer } from 'buffer';
+import { unzip } from './unzip'
+import binaryAjax from './binaryajax-fetch';
+import ParseShpFile from './parse-shp';
+import { parseDbf } from './parse-dbf';
 
-const cache = new Cache({
-  max: 20
-});
 
-function toBuffer(b: any) {
-  if (!b) {
-    throw new Error('forgot to pass buffer');
-  }
-  if (Buffer.isBuffer(b)) {
-    return b;
-  }
-  if (isArrayBuffer(b)) {
-    return Buffer.from(b);
-  }
-  if (isArrayBuffer(b.buffer)) {
-    if (b.BYTES_PER_ELEMENT === 1) {
-      return Buffer.from(b);
-    }
-    return Buffer.from(b.buffer);
-  }
-}
-
-function isArrayBuffer(subject: any) {
-  return subject instanceof ArrayBuffer || Object.prototype.toString.call(subject) === '[object ArrayBuffer]';
-}
 class ShpObject {
-
   combine = ([shp, dbf]) => {
     const out: { [key: string]: any } = {};
     out.type = 'FeatureCollection';
@@ -52,10 +25,9 @@ class ShpObject {
     }
     return out;
   };
-  parseZip = async (buffer, whiteList?, encoding?: string) => {
+  parseZip = async (buffer: Uint8Array | ArrayBuffer, whiteList?: Array<string>, encoding?: string) => {
     let key: string;
-    buffer = toBuffer(buffer);
-    const zip = await unzip(buffer, encoding);
+    const zip = unzip(buffer, encoding);
     const names: string[] = [];
     whiteList = whiteList || [];
     for (key in zip) {
@@ -77,7 +49,7 @@ class ShpObject {
       throw new Error('no layers founds');
     }
     const geojson = names.map((name: string) => {
-      let parsed, dbf;
+      let parsed: { [x: string]: any; fileName?: any; }, dbf: any[];
       const lastDotIdx = name.lastIndexOf('.');
       if (lastDotIdx > -1 && name.slice(lastDotIdx).indexOf('json') > -1) {
         parsed = JSON.parse(zip[name]);
@@ -102,29 +74,29 @@ class ShpObject {
   };
 
 
-  getZip = async (base, whiteList, encoding?: string) => {
-    const a = await binaryAjax(base);
+  getZip = async (base: string, whiteList: Array<string>, encoding?: string) => {
+    const a = await binaryAjax(base) as Uint8Array;
     return this.parseZip(a, whiteList, encoding);
   }
-  handleShp = async (base) => {
+  handleShp = async (base: string) => {
     const args = await Promise.all([
       binaryAjax(base, 'shp'),
       binaryAjax(base, 'prj')
     ]);
-    let prj = false;
+    let prj: boolean | proj4.Converter = false;
     try {
       if (args[1]) {
-        prj = proj4(args[1]);
+        prj = proj4(args[1] as string);
       }
     } catch (e) {
       prj = false;
     }
-    return ParseShpFile(args[0], prj);
+    return ParseShpFile(args[0] as Uint8Array, prj);
   };
 
 
 
-  handleDbf = async (base) => {
+  handleDbf = async (base: string) => {
     const [dbf, cpg] = await Promise.all([
       binaryAjax(base, 'dbf'),
       binaryAjax(base, 'cpg')
@@ -132,15 +104,15 @@ class ShpObject {
     if (!dbf) {
       return;
     }
-    return parseDbf(dbf, cpg);
+    return parseDbf(dbf as Uint8Array, cpg as string);
   };
-  checkSuffix = (base, suffix) => {
+  checkSuffix = (base: string, suffix: string) => {
     const url = new URL(location.href + base);
     return url.pathname.slice(-4).toLowerCase() === suffix;
   };
 
 
-  getShapefile = async (base, whiteList, encoding?: string) => {
+  getShapefile = async (base: string | Uint8Array | ArrayBuffer, whiteList: Array<string>, encoding?: string) => {
     if (typeof base !== 'string') {
       return this.parseZip(base, whiteList, encoding);
     }
@@ -153,11 +125,11 @@ class ShpObject {
     ]);
     return this.combine(results);
   };
-  parseShp = function (shp, prj) {
-    shp = toBuffer(shp);
-    if (Buffer.isBuffer(prj)) {
-      prj = prj.toString();
-    }
+  parseShp = function (shp: Uint8Array, prj: string | boolean | proj4.Converter) {
+    //shp = toBuffer(shp);
+    //if (Buffer.isBuffer(prj)) {
+    prj = prj.toString();
+    // }
     if (typeof prj === 'string') {
       try {
         prj = proj4(prj);
@@ -167,25 +139,18 @@ class ShpObject {
     }
     return ParseShpFile(shp, prj);
   };
-  parseDbf = function (dbf, cpg) {
-    dbf = toBuffer(dbf);
+  parseDbf = function (dbf: Uint8Array, cpg: string) {
+    //dbf = toBuffer(dbf);
     return parseDbf(dbf, cpg);
   };
 
 }
 
 
-const shp = function (base, whiteList?, encoding?: string) {
+const shp = async function (base: string | Uint8Array | ArrayBuffer, whiteList?: Array<string>, encoding?: string) {
   const sp = new ShpObject();
-  if (typeof base === 'string' && cache.has(base)) {
-    return Promise.resolve(cache.get(base));
-  }
-  return sp.getShapefile(base, whiteList, encoding).then(function (resp) {
-    if (typeof base === 'string') {
-      cache.set(base, resp);
-    }
-    return resp;
-  });
+  const resp = await sp.getShapefile(base, whiteList, encoding);
+  return resp;
 }
 
 export default shp;

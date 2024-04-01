@@ -1,5 +1,5 @@
 
-const combine=function (base, type)  {
+const combine=function (base: string, type: any)  {
   if (!type) {
     return base;
   }

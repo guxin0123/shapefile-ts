@@ -1,2 +1,2 @@
-declare function binaryAjax(_url: any, type: any): Promise<unknown>;
+declare function binaryAjax(_url: string, type?: string): Promise<string | false | Uint8Array>;
 export default binaryAjax;

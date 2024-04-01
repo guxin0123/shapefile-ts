@@ -1,11 +1,7 @@
-import fallback from './binaryajax-browser';
 import combine from './combine';
-import { Buffer } from 'buffer';
 
-async function binaryAjax (_url, type) {
-  if (!global.fetch) {
-    return fallback(_url, type);
-  }
+async function binaryAjax (_url: string, type?: string) {
+
   const url = combine(_url, type);
   const isOptionalTxt = type === 'prj' || type === 'cpg';
   try {
@@ -17,7 +13,7 @@ async function binaryAjax (_url, type) {
       return resp.text();
     }
     const parsed = await resp.arrayBuffer();
-    return Buffer.from(parsed);
+    return new Uint8Array(parsed);
   } catch (e) {
     console.log('ERROR', e, type);
     if (isOptionalTxt || type === 'dbf') {

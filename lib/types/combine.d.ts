@@ -1,2 +1,2 @@
-declare const combine: (base: any, type: any) => any;
+declare const combine: (base: string, type: any) => string;
 export default combine;

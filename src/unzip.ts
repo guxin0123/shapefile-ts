@@ -1,36 +1,30 @@
-import JSZip from 'jszip';
-import { Buffer } from 'buffer';
-import iconv from 'iconv-lite';
+import * as fflate from 'fflate';
 
 
-
-const unzip = async (buffer: string | number[] | ArrayBuffer | Uint8Array | Blob | NodeJS.ReadableStream | Promise<string | number[] | ArrayBuffer | Uint8Array | Blob | NodeJS.ReadableStream>,encoding?:string) => {
-  const zip = new JSZip();
-  if(encoding!=null){
-    await zip.loadAsync(buffer,{
-      decodeFileName: function (bytes) {
-        if(bytes instanceof Uint8Array){
-          return iconv.decode(bytes as globalThis.Buffer, encoding);
-        }
-        return "";
-      }
-    });
-  }else{
-    await zip.loadAsync(buffer);
+const unzip = (buffer: ArrayBuffer | Uint8Array, encoding?: string) => {
+  let zipBuffer: Uint8Array;
+  if (buffer instanceof ArrayBuffer) {
+    zipBuffer = new Uint8Array(buffer);
+  } else {
+    zipBuffer = buffer;
   }
-  
-  const files = zip.file(/.+/);
   const out = {};
-  await Promise.all(files.map(async (a) => {
-    let result: string | number[] | ArrayBuffer | { valueOf(): ArrayBuffer | SharedArrayBuffer; };
-    if (a.name.slice(-3).toLowerCase() === 'shp' || a.name.slice(-3).toLowerCase() === 'dbf') {
-      result = await a.async('array');
-      result = Buffer.from(result)
-    } else {
-      result = await a.async('text');
+  const decompressed: { [key: string]: any } = fflate.unzipSync(zipBuffer);
+  for (const key in decompressed) {
+    let fileName = key;
+    if (encoding) {
+      var decoder = new TextDecoder(encoding);
+      fileName = decoder.decode(fflate.strToU8(key));
     }
-    out[a.name] = result;
-  }));
+    let result: string;
+    if (fileName.slice(-3).toLowerCase() === 'shp' || fileName.slice(-3).toLowerCase() === 'dbf') {
+      result = decompressed[key];
+    } else {
+      result = fflate.strFromU8(decompressed[key]);
+    }
+    out[fileName] = result;
+  }
   return out;
 };
-export default unzip;
+
+export { unzip };

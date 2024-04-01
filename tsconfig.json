@@ -20,6 +20,7 @@
             "strictNullChecks": false, /* 严格空检查. */ 
             /* 额外检查 */ 
             "noUnusedLocals": true, /* 检查无用的变量. */ 
+            "skipLibCheck": true,
             /* Module Resolution Options */ 
             "moduleResolution": "node", /* 指定模块查找策略： 'node' (Node.js) or 'classic' (TypeScript pre-1.6) */ 
             "baseUrl": "./", /* 查找模块的基础目录 */ 
@@ -29,6 +30,7 @@
                 ] 
             }, /* 记录 baseUrl 的模块路径查找别名 */ 
             "types": [], /* 类型声明文件 */ 
+            "outDir": "dist"
         },
     "include": [ 
         /* 指定编译处理的文件列表 */ 
