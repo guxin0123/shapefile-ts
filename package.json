@@ -1,6 +1,6 @@
 {
   "name": "shapefile-ts",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "repository": {
     "type": "git",
     "url": "https://github.com/guxin0123/shapefile-ts.git"
@@ -24,7 +24,6 @@
     "build:es": "rollup --config rollup/rollup.esm.config.mjs",
     "build:umd": "rollup --config rollup/rollup.umd.config.mjs",
     "build:ALL": "npm run clean:dist && npm run build:types && npm run build:es &&npm run build:umd ",
-
     "pretest": "npm run build",
     "browser-test": "vite"
   },

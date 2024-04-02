@@ -1,6 +1,5 @@
 import * as fflate from 'fflate';
 
-
 const unzip = (buffer: ArrayBuffer | Uint8Array, encoding?: string) => {
   let zipBuffer: Uint8Array;
   if (buffer instanceof ArrayBuffer) {
@@ -14,7 +13,8 @@ const unzip = (buffer: ArrayBuffer | Uint8Array, encoding?: string) => {
     let fileName = key;
     if (encoding) {
       var decoder = new TextDecoder(encoding);
-      fileName = decoder.decode(fflate.strToU8(key));
+      var u8 = stringToUint8Array(key);
+      fileName = decoder.decode(u8);
     }
     let result: string;
     if (fileName.slice(-3).toLowerCase() === 'shp' || fileName.slice(-3).toLowerCase() === 'dbf') {
@@ -26,5 +26,14 @@ const unzip = (buffer: ArrayBuffer | Uint8Array, encoding?: string) => {
   }
   return out;
 };
+
+function stringToUint8Array(str: string){
+  var arr = [];
+  for (var i = 0, j = str.length; i < j; ++i) {
+    arr.push(str.charCodeAt(i));
+  }
+  var tmpUint8Array = new Uint8Array(arr);
+  return tmpUint8Array
+}
 
 export { unzip };
