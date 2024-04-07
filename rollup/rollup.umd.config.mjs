@@ -1,6 +1,6 @@
 //rollup.umd.config.mjs
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs'
+
 import basicConfig from './rollup.config.mjs'
 import terser from '@rollup/plugin-terser';
 import replace from '@rollup/plugin-replace'
@@ -37,8 +37,7 @@ const config = {
             'process.env.NODE_ENV': JSON.stringify('production'), //该插件在绑定时替换文件中的目标字符串
             preventAssignment: true
         }),
-        // 识别 commonjs 模式第三方依赖 
-        commonjs(),
+
         // 解析第三方依赖 
         nodeResolve({
             browser: true,

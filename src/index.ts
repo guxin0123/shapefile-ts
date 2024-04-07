@@ -125,7 +125,7 @@ class ShpObject {
     ]);
     return this.combine(results);
   };
-  parseShp = function (shp: Uint8Array, prj: string | boolean | proj4.Converter) {
+  parseShp =  (shp: Uint8Array, prj: string | boolean | proj4.Converter)=>{
     //shp = toBuffer(shp);
     //if (Buffer.isBuffer(prj)) {
     prj = prj.toString();
@@ -139,7 +139,7 @@ class ShpObject {
     }
     return ParseShpFile(shp, prj);
   };
-  parseDbf = function (dbf: Uint8Array, cpg: string) {
+  parseDbf =  (dbf: Uint8Array, cpg: string)=> {
     //dbf = toBuffer(dbf);
     return parseDbf(dbf, cpg);
   };

@@ -1,6 +1,6 @@
 {
   "name": "shapefile-ts",
-  "version": "1.0.13",
+  "version": "1.0.17",
   "repository": {
     "type": "git",
     "url": "https://github.com/guxin0123/shapefile-ts.git"
@@ -10,6 +10,7 @@
   "module": "./lib/index.esm.js",
   "umd": "./lib/shp.umd.js",
   "types": "./lib/types/index.d.ts",
+  "type": "module",
   "files": [
     "/lib"
   ],
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
+    "@babel/preset-typescript": "^7.24.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",

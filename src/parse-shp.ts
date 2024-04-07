@@ -1,7 +1,7 @@
 import proj4 from "proj4";
 
 class ParseShp {
-  parseFunc: any;
+  parseFunc: Function;
   buffer: Uint8Array;
   rows: any[] = [];
 
@@ -17,16 +17,6 @@ class ParseShp {
   }
 
   headers: any; parseCoord: any;
-  shpFuncObj = {
-    1: 'parsePoint',
-    3: 'parsePolyline',
-    5: 'parsePolygon',
-    8: 'parseMultiPoint',
-    11: 'parseZPoint',
-    13: 'parseZPolyline',
-    15: 'parseZPolygon',
-    18: 'parseZMultiPoint'
-  };
 
 
 
@@ -83,7 +73,7 @@ class ParseShp {
     if (!(num in this.shpFuncObj)) {
       throw new Error('I don\'t know that shp type');
     }
-    this.parseFunc = this[this.shpFuncObj[num]];
+    this.parseFunc = this.shpFuncObj[num];
     this.parseCoord = this.makeParseCoord(tran);
   };
 
@@ -243,6 +233,7 @@ class ParseShp {
   };
 
 
+
   polyFuncs = (out: { [x: string]: any; type?: any; coordinates?: any; }) => {
     if (!out) {
       return out;
@@ -270,7 +261,16 @@ class ParseShp {
     return this.polyFuncs(this.parseZPolyline(data));
   };
 
-
+  shpFuncObj = {
+    1: this.parsePoint,
+    3: this.parsePolyline,
+    5: this.parsePolygon,
+    8: this.parseMultiPoint,
+    11: this.parseZPoint,
+    13: this.parseZPolyline,
+    15: this.parseZPolygon,
+    18: this.parseZMultiPoint
+  };
 
   getShpCode = () => {
     return this.parseHeader().shpCode;
@@ -278,6 +278,8 @@ class ParseShp {
   parseHeader = () => {
     const view: Uint8Array = this.buffer.slice(0, 100);
     var dataView = new DataView(view.buffer);
+    console.log(dataView.getInt32(8 << 2, true));
+    console.log(dataView.getInt32(8 << 2));
     return {
       length: dataView.getInt32(6 << 2) << 1,
       version: dataView.getInt32(7 << 2, true),
@@ -332,7 +334,7 @@ class ParseShp {
 
 }
 
-function ParseShpFile(buffer: Uint8Array, trans: string | boolean | proj4.Converter) {
+const ParseShpFile = (buffer: Uint8Array, trans: string | boolean | proj4.Converter) => {
   return new ParseShp(buffer, trans).rows;
 };
 export default ParseShpFile;

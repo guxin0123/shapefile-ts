@@ -12,8 +12,9 @@ var geo = L.geoJson({ features: [] }, {
     }
   }
 }).addTo(m);
-var base = location.href + '/files/TM_WORLD_BORDERS_SIMPL-0.3.zip';
-//var base = location.href + '/files/沉积岩.zip';
+var base =  'files/TM_WORLD_BORDERS_SIMPL-0.3';
+var base =  'files/TM_WORLD_BORDERS_SIMPL-0.3.zip';
+//var base =  'files/pandr.shp';
 shp(base, null, "GB18030").then(function (data) {
   geo.addData(data);
 });
