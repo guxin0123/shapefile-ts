@@ -1,6 +1,6 @@
 {
   "name": "shapefile-ts",
-  "version": "1.0.17",
+  "version": "1.0.19",
   "repository": {
     "type": "git",
     "url": "https://github.com/guxin0123/shapefile-ts.git"
@@ -14,25 +14,15 @@
   "files": [
     "/lib"
   ],
-  "lint-staged": {
-    "src/**/*.{js,ts}": [
-      "eslint --fix"
-    ]
-  },
   "scripts": {
+    "test": "mocha ./test/test.js -r jsdom-global/register",
+    "serve": "node test/server.js",
     "clean:dist": "rimraf lib dist",
     "build:types": "tsc -b ./tsconfig.types.json",
     "build:es": "rollup --config rollup/rollup.esm.config.mjs",
     "build:umd": "rollup --config rollup/rollup.umd.config.mjs",
     "build:ALL": "npm run clean:dist && npm run build:types && npm run build:es &&npm run build:umd ",
-    "pretest": "npm run build",
-    "browser-test": "vite"
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ],
-    "comments": false
+    "vite-test": "vite"
   },
   "author": "Gux",
   "license": "MIT",
@@ -41,20 +31,18 @@
     "proj4": "^2.10.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.24.1",
-    "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/proj4": "^2.5.5",
-    "@typescript-eslint/eslint-plugin": "^7.2.0",
-    "@typescript-eslint/parser": "^7.2.0",
-    "eslint": "^8.57.0",
+    "chai": "^5.1.0",
+    "chai-promised": "^1.0.2",
+    "express": "^4.19.2",
+    "jsdom": "24.0.0",
+    "jsdom-global": "3.0.2",
+    "mocha": "^10.4.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.13.0",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.23",

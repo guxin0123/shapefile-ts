@@ -278,8 +278,6 @@ class ParseShp {
   parseHeader = () => {
     const view: Uint8Array = this.buffer.slice(0, 100);
     var dataView = new DataView(view.buffer);
-    console.log(dataView.getInt32(8 << 2, true));
-    console.log(dataView.getInt32(8 << 2));
     return {
       length: dataView.getInt32(6 << 2) << 1,
       version: dataView.getInt32(7 << 2, true),

@@ -1,7 +1,12 @@
 import basicConfig from './rollup.config.mjs'
 import excludeDependenciesFromBundle from "rollup-plugin-exclude-dependencies-from-bundle"
-import pkg from '../package.json' assert { type: "json" };
+import { readFile } from 'fs/promises';
 
+const pkg = JSON.parse(
+  await readFile(
+    new URL('../package.json', import.meta.url)
+  )
+);
 const config = {
   ...basicConfig, //整合公共部分
   output: [

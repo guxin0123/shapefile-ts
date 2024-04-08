@@ -27,21 +27,21 @@ class ShpObject {
   };
   parseZip = async (buffer: Uint8Array | ArrayBuffer, whiteList?: Array<string>, encoding?: string) => {
     let key: string;
-    const zip = unzip(buffer, encoding);
+    const zip = await unzip(buffer, encoding);
     const names: string[] = [];
     whiteList = whiteList || [];
     for (key in zip) {
       if (key.indexOf('__MACOSX') !== -1) {
         continue;
       }
-      if (key.slice(-3).toLowerCase() === 'shp') {
+      if (key.slice(-4).toLowerCase() === '.shp') {
         names.push(key.slice(0, -4));
         zip[key.slice(0, -3) + key.slice(-3).toLowerCase()] = zip[key];
-      } else if (key.slice(-3).toLowerCase() === 'prj') {
+      } else if (key.slice(-4).toLowerCase() === '.prj') {
         zip[key.slice(0, -3) + key.slice(-3).toLowerCase()] = proj4(zip[key]);
-      } else if (key.slice(-4).toLowerCase() === 'json' || whiteList.indexOf(key.split('.').pop()) > -1) {
+      } else if (key.slice(-5).toLowerCase() === '.json' || whiteList.indexOf(key.split('.').pop()) > -1) {
         names.push(key.slice(0, -3) + key.slice(-3).toLowerCase());
-      } else if (key.slice(-3).toLowerCase() === 'dbf' || key.slice(-3).toLowerCase() === 'cpg') {
+      } else if (key.slice(-4).toLowerCase() === '.dbf' || key.slice(-4).toLowerCase() === '.cpg') {
         zip[key.slice(0, -3) + key.slice(-3).toLowerCase()] = zip[key];
       }
     }
@@ -123,7 +123,7 @@ class ShpObject {
       this.handleShp(base),
       this.handleDbf(base)
     ]);
-    return this.combine(results);
+     return this.combine(results);
   };
   parseShp =  (shp: Uint8Array, prj: string | boolean | proj4.Converter)=>{
     //shp = toBuffer(shp);

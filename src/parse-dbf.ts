@@ -19,11 +19,11 @@ function dbfRowHeader(data: Uint8Array, headerLen: number, decoder: Function) {
   while (offset < headerLen) {
     out.push({
       name: decoder(data.slice(offset, offset + 11)),
-      dataType: String.fromCharCode(dataView.getInt8(offset + 11)),
-      len: dataView.getInt8(offset + 16),
-      decimal: dataView.getInt8(offset + 17)
+      dataType: String.fromCharCode(dataView.getUint8(offset + 11)),
+      len: dataView.getUint8(offset + 16),
+      decimal: dataView.getUint8(offset + 17)
     });
-    if (dataView.getInt8(offset + 32) === 13) {
+    if (dataView.getUint8(offset + 32) === 13) {
       break;
     } else {
       offset += 32;

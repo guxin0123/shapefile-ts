@@ -4,7 +4,14 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import basicConfig from './rollup.config.mjs'
 import terser from '@rollup/plugin-terser';
 import replace from '@rollup/plugin-replace'
-import pkg from '../package.json' assert { type: "json" };
+
+
+import { readFile } from 'fs/promises';
+const pkg = JSON.parse(
+  await readFile(
+    new URL('../package.json', import.meta.url)
+  )
+);
 
 const config = {
     ...basicConfig, //整合公共部分配置

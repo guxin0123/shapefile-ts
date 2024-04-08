@@ -1,6 +1,17 @@
 # Shapefile.ts
 Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapefile-js
 
+## Differ
+
+- No NodeBuffer error. No global error.
+
+- Convert to typescript file
+
+- Not using rollup-plugin-node-polyfills
+
+- Custom zip file encoding
+
+- Zip library changed to fflate
 
 
 ## Usage
