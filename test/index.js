@@ -1,4 +1,9 @@
 import shp from '../src/index.ts'
+//import shp from '../src/index.ts'
+
+
+// const shpHelper = new ShpHelper();
+// shpHelper.combine(shpHelper.parseShp(new Uint8Array(shpBuffer), /*optional prj str*/),shpHelper.parseDbf(new Uint8Array(dbfBuffer)));
 
 var m = L.map('map').setView([34.74161249883172, 18.6328125], 2);
 var geo = L.geoJson({ features: [] }, {
@@ -14,12 +19,15 @@ var geo = L.geoJson({ features: [] }, {
 }).addTo(m);
 //var base =  'data/htmlprj?blah=baz';
 //var base =  'files/TM_WORLD_BORDERS_SIMPL-0.3.zip';
-var base =  'http://localhost:3000/data/qgis.zip?aaa=bbb';
+var base =  '/data/qgis.zip?aaa=bbb';
 //var base =  'http://localhost:5173/files/pandr.shp';
 shp(base, null, "GB18030").then(function (data) {
-  console.log(data)
+  //console.log(data)
   geo.addData(data);
 });
+const geoJsonData = await shp("/data/export_multipointz.dbf", null, "GB18030");
+addByGeoJsonData(geoJsonData, "codepage");
+
 
 document.getElementById("upload").addEventListener("click", () => {
   PickUploadFileLegacy((file, name) => {
@@ -37,12 +45,12 @@ const loadUploadFile = (file, path) => {
   if (file && fileNameLower.endsWith(".zip")) {
       //loadShpFile(file, layerName);
       readUploadFile(file, async (result) => {
-          const geoJsonData = await shp(result, null, "GB18030");
+          const geoJsonData = await shp(new Uint8Array(result), null, "GB18030");
           addByGeoJsonData(geoJsonData, layerName);
       });
       return;
   }
-  alert("错误","不支持的文件格式!","关闭");
+  alert("错误,不支持的文件格式!,关闭");
 }
 
 const readUploadFile = (blobFile, onSuccess) => {
@@ -54,6 +62,7 @@ const readUploadFile = (blobFile, onSuccess) => {
 }
 function addByGeoJsonData(a,b){
   geo.addData(a);
+  console.log("layer added name :"+b)
 }
 //传统上传方式
 function PickUploadFileLegacy(onChange, accept) {
@@ -78,4 +87,5 @@ function PickUploadFileLegacy(onChange, accept) {
   setTimeout(() => {
     input.click();
   }, 100);
+
 }

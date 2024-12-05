@@ -3,7 +3,7 @@
     "compilerOptions": 
         { 
             /* 基础选项 */ 
-            "target": "ES5", /* 指定 ECMAScript 目标版本：'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */ 
+            "target": "ES2015", /* 指定 ECMAScript 目标版本：'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
             "module": "esnext", /* 输出的代码使用什么方式进行模块化： 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */ 
             "lib": [ /* 指定引用的标准库 */ 
                 "esnext", 

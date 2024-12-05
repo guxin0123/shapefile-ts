@@ -1,6 +1,6 @@
 {
   "name": "shapefile-ts",
-  "version": "1.0.19",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/guxin0123/shapefile-ts.git"
@@ -39,15 +39,15 @@
     "@types/proj4": "^2.5.5",
     "chai": "^5.1.0",
     "chai-promised": "^1.0.2",
-    "express": "^4.19.2",
+    "express": "5.0.0",
     "jsdom": "24.0.0",
     "jsdom-global": "3.0.2",
     "mocha": "^10.4.0",
     "rimraf": "^5.0.5",
-    "rollup": "^4.13.0",
+    "rollup": "4.22.4",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.23",
     "tslib": "^2.6.2",
     "typescript": "^5.4.2",
-    "vite": "^5.1.6"
+    "vite": "5.4.6"
   }
 }

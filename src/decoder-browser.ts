@@ -1,11 +1,12 @@
 
 function defaultDecoder(data: AllowSharedBufferSource) {
-  var decoder = new TextDecoder();
-  var out = decoder.decode(data);
+  const decoder = new TextDecoder();
+  const out = decoder.decode(data);
   return out.replace(/\0/g, '').trim();
 }
 
-var regex = /^(?:ANSI\s)?(\d+)$/m;
+const regex = /^(?:ANSI\s)?(\d+)$/m;
+
 function createDecoder(encoding: string, second?: boolean) {
   if (!encoding) {
     return defaultDecoder;
@@ -13,7 +14,7 @@ function createDecoder(encoding: string, second?: boolean) {
   try {
     new TextDecoder(encoding.trim());
   } catch (e) {
-    var match = regex.exec(encoding);
+    const match = regex.exec(encoding);
     if (match && !second) {
       return createDecoder('windows-' + match[1], true);
     } else {
@@ -22,8 +23,8 @@ function createDecoder(encoding: string, second?: boolean) {
   }
   return browserDecoder;
   function browserDecoder(buffer: AllowSharedBufferSource) {
-    var decoder = new TextDecoder(encoding);
-    var out = decoder.decode(buffer, {
+    const decoder = new TextDecoder(encoding);
+    const out = decoder.decode(buffer, {
       stream: true
     }) + decoder.decode();
     return out.replace(/\0/g, '').trim();

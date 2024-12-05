@@ -59,6 +59,10 @@ name of the shapefile minus the extension (I.E. the part of the name that's the 
 You could also load the arraybuffers seperately:
 
 ```javascript
-shp.combine([shp.parseShp(shpBuffer, /*optional prj str*/),shp.parseDbf(dbfBuffer)]);
+import {ShpHelper} from 'shapefile-ts'
+
+const shpHelper = new ShpHelper();
+shpHelper.combine(shpHelper.parseShp(shpBuffer, /*optional prj str*/),shpHelper.parseDbf(dbfBuffer));
+
 ```
 

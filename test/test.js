@@ -118,8 +118,8 @@ describe('Shp', function () {
                 return resp.features[0].geometry.coordinates;
             }).should.eventually.deep.equal([
                 [
-                    -123.00000000000001,
-                    48.00000000000001,
+                    -123,
+                    48,
                     1200
                 ],
                 [
@@ -140,7 +140,7 @@ describe('Shp', function () {
             }).should.eventually.deep.equal([
                 [
                     [
-                        -119.99999999999999,
+                        -120,
                         45,
                         800
                     ],
@@ -150,7 +150,7 @@ describe('Shp', function () {
                         1100
                     ],
                     [
-                        -118.00000000000001,
+                        -118,
                         43,
                         2300
                     ]
@@ -162,7 +162,7 @@ describe('Shp', function () {
                         0
                     ],
                     [
-                        -114.00000000000001,
+                        -114,
                         39,
                         0
                     ],

@@ -1,86 +1,95 @@
-import { createDecoder } from "./decoder-browser"
+import {createDecoder} from "./decoder-browser"
+import {DbfHeader} from "@/entity/dbf-header";
+import {DbfRowHeader} from "@/entity/dbf-row-header";
 
-
-
-function dbfHeader(data: Uint8Array) {
-  var dataView = new DataView(data.buffer);
-  var out: { [key: string]: any } = {};
-  out.lastUpdated = new Date(dataView.getInt8(1) + 1900, dataView.getInt8(2), dataView.getInt8(3));
-  out.records = dataView.getInt32(4, true)//data.readUInt32LE(4);
-  out.headerLen = dataView.getInt16(8, true);
-  out.recLen = dataView.getInt16(10, true);
-  return out;
-}
-
-function dbfRowHeader(data: Uint8Array, headerLen: number, decoder: Function) {
-  var dataView = new DataView(data.buffer);
-  var out = [];
-  var offset = 32;
-  while (offset < headerLen) {
-    out.push({
-      name: decoder(data.slice(offset, offset + 11)),
-      dataType: String.fromCharCode(dataView.getUint8(offset + 11)),
-      len: dataView.getUint8(offset + 16),
-      decimal: dataView.getUint8(offset + 17)
-    });
-    if (dataView.getUint8(offset + 32) === 13) {
-      break;
-    } else {
-      offset += 32;
+export class ParseDbf {
+    static readDbfHeader(data: Uint8Array): DbfHeader {
+        const dataView = new DataView(data.buffer);
+        let dbfHeader: DbfHeader = new DbfHeader();
+        dbfHeader.lastUpdated = new Date(dataView.getInt8(1) + 1900, dataView.getInt8(2), dataView.getInt8(3));
+        dbfHeader.records = dataView.getInt32(4, true);
+        dbfHeader.headerLen = dataView.getInt16(8, true);
+        dbfHeader.recLen = dataView.getInt16(10, true);
+        return dbfHeader;
     }
-  }
-  return out;
-}
 
-function rowFuncs(buffer: Uint8Array, offset: number, len: number, type: string, decoder: Function) {
-  var data = buffer.slice(offset, offset + len);
-  var textData = decoder(data);
-  switch (type) {
-    case 'N':
-    case 'F':
-    case 'O':
-      return parseFloat(textData);
-    case 'D':
-      return new Date(textData.slice(0, 4), parseInt(textData.slice(4, 6), 10) - 1, textData.slice(6, 8));
-    case 'L':
-      return textData.toLowerCase() === 'y' || textData.toLowerCase() === 't';
-    default:
-      return textData;
-  }
-}
 
-function parseRow(buffer: Uint8Array, offset: number, rowHeaders: Array<any>, decoder: Function) {
-  var out = {};
-  var i = 0;
-  var len = rowHeaders.length;
-  var field: any;
-  var header: { len: number; dataType: string; name: string | number; };
-  while (i < len) {
-    header = rowHeaders[i];
-    field = rowFuncs(buffer, offset, header.len, header.dataType, decoder);
-    offset += header.len;
-    if (typeof field !== 'undefined') {
-      out[header.name] = field;
+    static readDbfRowHeaders(data: Uint8Array, headerLen: number, decoder: Function): DbfRowHeader[] {
+        const dataView = new DataView(data.buffer);
+        const dbfRowHeaders: DbfRowHeader[] = [];
+        let offset = 32;
+        while (offset < headerLen) {
+            dbfRowHeaders.push({
+                name: decoder(data.slice(offset, offset + 11)),
+                dataType: String.fromCharCode(dataView.getUint8(offset + 11)),
+                len: dataView.getUint8(offset + 16),
+                decimal: dataView.getUint8(offset + 17)
+            });
+            if (dataView.getUint8(offset + 32) === 13) {
+                break;
+            } else {
+                offset += 32;
+            }
+        }
+        return dbfRowHeaders;
     }
-    i++;
-  }
-  return out;
+
+    static rowFunc(buffer: Uint8Array, offset: number, len: number, type: string, decoder: Function): string | Date | boolean | number {
+        const data = buffer.slice(offset, offset + len);
+        const textData: string = decoder(data);
+        switch (type) {
+            case 'N':
+            case 'F':
+            case 'O':
+                return parseFloat(textData);
+            case 'D':
+                return new Date(parseInt(textData.slice(0, 4)), parseInt(textData.slice(4, 6), 10) - 1, parseInt(textData.slice(6, 8)));
+            case 'L':
+                return textData.toLowerCase() === 'y' || textData.toLowerCase() === 't';
+            default:
+                return textData;
+        }
+    }
+
+    static parseRow(buffer: Uint8Array, offset: number, rowHeaders: DbfRowHeader[], decoder: Function) {
+        const out = {};
+        let i = 0;
+        const len = rowHeaders.length;
+        let field: string | number | boolean | Date;
+        let header: DbfRowHeader;
+        while (i < len) {
+            header = rowHeaders[i];
+            field = ParseDbf.rowFunc(buffer, offset, header.len, header.dataType, decoder);
+            offset += header.len;
+            if (typeof field !== 'undefined') {
+                out[header.name] = field;
+            }
+            i++;
+        }
+        return out;
+    }
+
+    static parseDbf = function (buffer: Uint8Array | ArrayBuffer, encoding: string) {
+        if (buffer instanceof ArrayBuffer) {
+            buffer = new Uint8Array(buffer);
+        }
+
+        const decoder: any = createDecoder(encoding);
+        const header: DbfHeader = ParseDbf.readDbfHeader(<Uint8Array>buffer);
+        const rowHeaders: DbfRowHeader[] = ParseDbf.readDbfRowHeaders(<Uint8Array>buffer, header.headerLen - 1, decoder);
+
+        let offset = ((rowHeaders.length + 1) << 5) + 2;
+        const recLen = header.recLen;
+        let records = header.records;
+        const out = [];
+        while (records) {
+            out.push(ParseDbf.parseRow(<Uint8Array>buffer, offset, rowHeaders, decoder));
+            offset += recLen;
+            records--;
+        }
+        return out;
+    };
+
 }
 
-const parseDbf = function (buffer: Uint8Array, encoding: string) {
-  var decoder = createDecoder(encoding);
-  var header = dbfHeader(buffer);
-  var rowHeaders = dbfRowHeader(buffer, header.headerLen - 1, decoder);
-
-  var offset = ((rowHeaders.length + 1) << 5) + 2;
-  var recLen = header.recLen;
-  var records = header.records;
-  var out = [];
-  while (records) {
-    out.push(parseRow(buffer, offset, rowHeaders, decoder));
-    offset += recLen;
-    records--;
-  }
-  return out;
-};
-export { parseDbf, dbfHeader }
+//export {parseDbf, readDbfHeader}
