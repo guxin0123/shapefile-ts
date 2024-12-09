@@ -20,7 +20,7 @@ const config = {
             name: "shp",//浏览器引入的全局变量名称
             file: pkg.umd, //输出文件
             format: 'umd', //输出格式
-            //exports: 'named', //导出的是全局变量命名方式
+            exports: 'named', //导出的是全局变量命名方式
             sourcemap: true,
             //   globals: { //对被排除的依赖命名
             //     'react': 'React', //三方库映射
