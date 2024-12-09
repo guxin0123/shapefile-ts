@@ -1,0 +1,52 @@
+<!--suppress JSDeprecatedSymbols -->
+<html lang="">
+<head>
+    <!--suppress JSUnresolvedLibraryURL -->
+    <script src="https://unpkg.com/shapefile-ts@latest/lib/shp.umd.js"></script>
+<!--    <script src="../lib/shp.umd.js"></script>-->
+    <!--suppress JSUnresolvedReference -->
+    <script>
+        const shpHelper = new shp.ShpHelper();
+
+        function combine(){
+            // console.log(shpBuffer);
+            // console.log(dbfBuffer);
+            const data=shpHelper.combine(shpHelper.parseShp(shpBuffer),shpHelper.parseDbf(dbfBuffer));
+            console.log(data);
+        }
+        let shpBuffer, dbfBuffer;
+        function handleFileSelect(event){
+            // console.log(event.target.id);
+            const flags = event.target.id;
+            const file = event.target.files[0]
+
+            const reader = new FileReader();
+            reader.onload = function() {
+                if(flags==="shpBuffer"){
+                    shpBuffer=reader.result;
+                }
+                if(flags==="dbfBuffer"){
+                    dbfBuffer=reader.result;
+                }
+            }
+            reader.readAsArrayBuffer(file);
+
+        }
+    </script>
+    <title>UMD Test</title>
+</head>
+<body>
+
+<form >
+    <input type="file" id="shpBuffer" name="shpBuffer" onchange="handleFileSelect(event)">
+    <input type="file" id="dbfBuffer" name="dbfBuffer" onchange="handleFileSelect(event)">
+    <a onclick="combine()" href="#" >combine</a>
+</form>
+</body>
+</html>
+
+
+
+
+
+

@@ -5,6 +5,7 @@ const shp = async function (base: string | Uint8Array, whiteList?: Array<string>
     const sp = new ShpHelper();
     return await sp.getShapefile(base, whiteList, encoding);
 }
+shp.ShpHelper=ShpHelper;
 
 export default shp;
 export {ShpHelper}

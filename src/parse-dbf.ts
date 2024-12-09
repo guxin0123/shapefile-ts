@@ -59,7 +59,7 @@ export class ParseDbf {
         let header: DbfRowHeader;
         while (i < len) {
             header = rowHeaders[i];
-            field = ParseDbf.rowFunc(buffer, offset, header.len, header.dataType, decoder);
+            field = this.rowFunc(buffer, offset, header.len, header.dataType, decoder);
             offset += header.len;
             if (typeof field !== 'undefined') {
                 out[header.name] = field;
@@ -69,21 +69,21 @@ export class ParseDbf {
         return out;
     }
 
-    static parseDbf = function (buffer: Uint8Array | ArrayBuffer, encoding: string) {
+    static parseDbf =  (buffer: Uint8Array | ArrayBuffer, encoding: string)=> {
         if (buffer instanceof ArrayBuffer) {
             buffer = new Uint8Array(buffer);
         }
 
         const decoder: any = createDecoder(encoding);
-        const header: DbfHeader = ParseDbf.readDbfHeader(<Uint8Array>buffer);
-        const rowHeaders: DbfRowHeader[] = ParseDbf.readDbfRowHeaders(<Uint8Array>buffer, header.headerLen - 1, decoder);
+        const header: DbfHeader = this.readDbfHeader(<Uint8Array>buffer);
+        const rowHeaders: DbfRowHeader[] = this.readDbfRowHeaders(<Uint8Array>buffer, header.headerLen - 1, decoder);
 
         let offset = ((rowHeaders.length + 1) << 5) + 2;
         const recLen = header.recLen;
         let records = header.records;
         const out = [];
         while (records) {
-            out.push(ParseDbf.parseRow(<Uint8Array>buffer, offset, rowHeaders, decoder));
+            out.push(this.parseRow(<Uint8Array>buffer, offset, rowHeaders, decoder));
             offset += recLen;
             records--;
         }

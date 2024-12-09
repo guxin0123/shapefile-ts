@@ -64,5 +64,9 @@ import {ShpHelper} from 'shapefile-ts'
 const shpHelper = new ShpHelper();
 shpHelper.combine(shpHelper.parseShp(shpBuffer, /*optional prj str*/),shpHelper.parseDbf(dbfBuffer));
 
+// or umd 
+const shpHelper = new shp.ShpHelper();
+shpHelper.combine(shpHelper.parseShp(shpBuffer, /*optional prj str*/),shpHelper.parseDbf(dbfBuffer));
+
 ```
 

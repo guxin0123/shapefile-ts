@@ -1,2 +1,2 @@
-declare const unzip: (buffer: ArrayBuffer | Uint8Array, encoding?: string) => Promise<any>;
+declare const unzip: (buffer: Uint8Array | ArrayBuffer, encoding?: string) => Promise<any>;
 export { unzip };
