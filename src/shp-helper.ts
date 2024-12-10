@@ -1,9 +1,9 @@
 import {unzip} from "@/unzip";
 import proj4 from "proj4";
-import ParseShpFile from "@/parse-shp";
 import binaryAjax from "@/binaryajax-fetch";
 import {ShpEntity} from "@/entity/shp-entity";
 import {ParseDbf} from "@/parse-dbf";
+import {ParseShp} from "@/parse-shp";
 
 export class ShpHelper {
 
@@ -74,7 +74,7 @@ export class ShpHelper {
                 if (zip[name + '.dbf']) {
                     dbf = ParseDbf.parseDbf(zip[name + '.dbf'], zip[name + '.cpg']);
                 }
-                parsed = this.combine(ParseShpFile(zip[name + '.shp'], zip[name + '.prj']), dbf);
+                parsed = this.combine(ParseShp.ParseShpFile(zip[name + '.shp'], zip[name + '.prj']), dbf);
                 parsed.fileName = name;
             }
             return parsed;
@@ -113,7 +113,7 @@ export class ShpHelper {
         } catch (e) {
             prj = false;
         }
-        return ParseShpFile(args[0] as Uint8Array, prj);
+        return ParseShp.ParseShpFile(args[0] as Uint8Array, prj);
     };
 
 
@@ -181,7 +181,7 @@ export class ShpHelper {
                 prj = false;
             }
         }
-        return ParseShpFile(shp, prj);
+        return ParseShp.ParseShpFile(shp, prj);
     };
     /**
      * 转换dbf文件

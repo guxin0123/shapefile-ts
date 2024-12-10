@@ -117,11 +117,7 @@ export class ParseShp {
         }
         return new ShpRow(id, len, dataView.getInt32(8, true), this.buffer.slice(offset + 12, offset + len + 8));
     };
-
-
+    static ParseShpFile = (buffer: Uint8Array, trans: string | boolean | proj4.Converter): any[] => {
+        return new ParseShp(buffer, trans).rows;
+    };
 }
-
-const ParseShpFile = (buffer: Uint8Array, trans: string | boolean | proj4.Converter): any[] => {
-    return new ParseShp(buffer, trans).rows;
-};
-export default ParseShpFile;

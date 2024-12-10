@@ -1,6 +1,6 @@
 import * as fflate from 'fflate';
 
-const unzip = async (buffer: Uint8Array | ArrayBuffer, encoding?: string): Promise<any> => {
+export const unzip = async (buffer: Uint8Array | ArrayBuffer, encoding?: string): Promise<any> => {
     return new Promise((resolve, reject) => {
         let zipBuffer: Uint8Array;
         if (buffer instanceof ArrayBuffer) {
@@ -43,4 +43,3 @@ function stringToUint8Array(str: string) {
     return new Uint8Array(arr)
 }
 
-export {unzip};

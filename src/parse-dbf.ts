@@ -91,5 +91,3 @@ export class ParseDbf {
     };
 
 }
-
-//export {parseDbf, readDbfHeader}

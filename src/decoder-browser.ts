@@ -7,7 +7,7 @@ function defaultDecoder(data: AllowSharedBufferSource) {
 
 const regex = /^(?:ANSI\s)?(\d+)$/m;
 
-function createDecoder(encoding: string, second?: boolean) {
+export function createDecoder(encoding: string, second?: boolean) {
   if (!encoding) {
     return defaultDecoder;
   }
@@ -31,4 +31,3 @@ function createDecoder(encoding: string, second?: boolean) {
   }
 }
 
-export { createDecoder }
