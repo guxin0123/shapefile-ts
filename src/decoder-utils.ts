@@ -41,78 +41,62 @@ export class DecoderUtils {
         }
     }
 
-    // 判断文件编码格式的函数
-    static isUTF8(bytes: Uint8Array) {
-        let i = 0;
-        while (i < bytes.length) {
-            if ((// ASCII
-                bytes[i] == 0x09 ||
-                bytes[i] == 0x0A ||
-                bytes[i] == 0x0D ||
-                (0x20 <= bytes[i] && bytes[i] <= 0x7E)
-            )
-            ) {
-                i += 1;
-                continue;
-            }
+    static isUTF8(uint8Array) {
+        const length = uint8Array.length;
+        let singleByteCount = 0;
+        let multiByteCount = 0;
+        let invalidCount = 0;
 
-            if ((// non-overlong 2-byte
-                (0xC2 <= bytes[i] && bytes[i] <= 0xDF) &&
-                (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0xBF)
-            )
-            ) {
-                i += 2;
-                continue;
-            }
+        for (let i = 0; i < length; i++) {
+            const byte = uint8Array[i];
 
-            if ((
-                    // excluding over longs
-                    bytes[i] == 0xE0 &&
-                    (0xA0 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
-                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF)
-                ) ||
-                (
-                    // straight 3-byte
-                    ((0xE1 <= bytes[i] && bytes[i] <= 0xEC) ||
-                        bytes[i] == 0xEE ||
-                        bytes[i] == 0xEF) &&
-                    (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
-                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF)
-                ) ||
-                (// excluding surrogates
-                    bytes[i] == 0xED &&
-                    (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0x9F) &&
-                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF)
-                )
-            ) {
-                i += 3;
+            // dbf 0x20 is space
+            if (byte == 0x20) {
                 continue;
             }
-
-            if ((// planes 1-3
-                    bytes[i] == 0xF0 &&
-                    (0x90 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
-                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF) &&
-                    (0x80 <= bytes[i + 3] && bytes[i + 3] <= 0xBF)
-                ) ||
-                (// planes 4-15
-                    (0xF1 <= bytes[i] && bytes[i] <= 0xF3) &&
-                    (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0xBF) &&
-                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF) &&
-                    (0x80 <= bytes[i + 3] && bytes[i + 3] <= 0xBF)
-                ) ||
-                (// plane 16
-                    bytes[i] == 0xF4 &&
-                    (0x80 <= bytes[i + 1] && bytes[i + 1] <= 0x8F) &&
-                    (0x80 <= bytes[i + 2] && bytes[i + 2] <= 0xBF) &&
-                    (0x80 <= bytes[i + 3] && bytes[i + 3] <= 0xBF)
-                )
-            ) {
-                i += 4;
-                continue;
+            if (byte <= 0x7F) {
+                // Single-byte character (0x00-0x7F)
+                singleByteCount++;
+            } else if (byte >= 0xC2 && byte <= 0xDF) {
+                // Two-byte character (0xC2-0xDF followed by 0x80-0xBF)
+                if (i + 1 < length && uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF) {
+                    multiByteCount++;
+                    i++;
+                } else {
+                    invalidCount++;
+                }
+            } else if (byte >= 0xE0 && byte <= 0xEF) {
+                // Three-byte character (0xE0-0xEF followed by 0x80-0xBF and 0x80-0xBF)
+                if (i + 2 < length && uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF &&
+                    uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF) {
+                    multiByteCount++;
+                    i += 2;
+                } else {
+                    invalidCount++;
+                }
+            } else if (byte >= 0xF0 && byte <= 0xF4) {
+                // Four-byte character (0xF0-0xF4 followed by 0x80-0xBF, 0x80-0xBF, and 0x80-0xBF)
+                if (i + 3 < length && uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF &&
+                    uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF &&
+                    uint8Array[i + 3] >= 0x80 && uint8Array[i + 3] <= 0xBF) {
+                    multiByteCount++;
+                    i += 3;
+                } else {
+                    invalidCount++;
+                }
+            } else {
+                // Invalid byte for UTF-8
+                invalidCount++;
             }
-            return false;
         }
-        return true;
+
+        // If the majority of the bytes are valid UTF-8 patterns, consider it UTF-8
+        const totalValid = singleByteCount + multiByteCount;
+        const totalInvalid = invalidCount;
+        //console.log(totalValid > totalInvalid)
+        return totalValid > totalInvalid;
     }
+
+
+
 }
