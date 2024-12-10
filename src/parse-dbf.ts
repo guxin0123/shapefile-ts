@@ -1,6 +1,7 @@
-import {createDecoder} from "./decoder-browser"
+
 import {DbfHeader} from "@/entity/dbf-header";
 import {DbfRowHeader} from "@/entity/dbf-row-header";
+import {DecoderUtils} from "@/decoder-utils";
 
 export class ParseDbf {
     static readDbfHeader(data: Uint8Array): DbfHeader {
@@ -74,7 +75,7 @@ export class ParseDbf {
             buffer = new Uint8Array(buffer);
         }
 
-        const decoder: any = createDecoder(encoding);
+        const decoder: any = DecoderUtils.createDecoder(encoding);
         const header: DbfHeader = this.readDbfHeader(<Uint8Array>buffer);
         const rowHeaders: DbfRowHeader[] = this.readDbfRowHeaders(<Uint8Array>buffer, header.headerLen - 1, decoder);
 
