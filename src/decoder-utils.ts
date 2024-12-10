@@ -51,7 +51,7 @@ export class DecoderUtils {
             const byte = uint8Array[i];
 
             // dbf 0x20 is space
-            if (byte == 0x20) {
+            if (byte == 0x20 || byte == 0x00) {
                 continue;
             }
             if (byte <= 0x7F) {
@@ -96,7 +96,6 @@ export class DecoderUtils {
         //console.log(totalValid > totalInvalid)
         return totalValid > totalInvalid;
     }
-
 
 
 }
