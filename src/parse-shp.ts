@@ -10,15 +10,15 @@ import {ShpZPoint} from "@/entity/convert/shp-z-point";
 import {ShpZPolyline} from "@/entity/convert/shp-z-polyline";
 import {ShpZPolygon} from "@/entity/convert/shp-z-polygon";
 import {ShpZMultiPoint} from "@/entity/convert/shp-z-multi_point";
+import {ShpEntity} from "@/entity/shp-entity";
 
 export class ParseShp {
-    //parseFunc: Function;
     shpGeoObject: ShpBase;
     buffer: Uint8Array;
     rows: any[] = [];
     trans: string | boolean | proj4.Converter;
 
-    constructor(buffer: Uint8Array|ArrayBuffer, trans: string | boolean | proj4.Converter) {
+    constructor(buffer: Uint8Array | ArrayBuffer, trans: string | boolean | proj4.Converter) {
         if (buffer instanceof ArrayBuffer) {
             buffer = new Uint8Array(buffer);
         }
@@ -33,17 +33,6 @@ export class ParseShp {
     }
 
     headers: any;
-
-    // shpFuncObj = {
-    //     1: this.parsePoint,
-    //     3: this.parsePolyline,
-    //     5: this.parsePolygon,
-    //     8: this.parseMultiPoint,
-    //     11: this.parseZPoint,
-    //     13: this.parseZPolyline,
-    //     15: this.parseZPolygon,
-    //     18: this.parseZMultiPoint
-    // };
     shpObjArray = {
         1: ShpPoint,
         3: ShpPolyline,
@@ -54,7 +43,6 @@ export class ParseShp {
         15: ShpZPolygon,
         18: ShpZMultiPoint
     };
-
 
     setShpObjType() {
         let num = this.headers.shpCode;
@@ -117,7 +105,44 @@ export class ParseShp {
         }
         return new ShpRow(id, len, dataView.getInt32(8, true), this.buffer.slice(offset + 12, offset + len + 8));
     };
-    static ParseShpFile = (buffer: Uint8Array, trans: string | boolean | proj4.Converter): any[] => {
-        return new ParseShp(buffer, trans).rows;
+
+
+    static combine = (geometryArray: any[], propertiesArray: any[]) => {
+        const shpEntity: ShpEntity = new ShpEntity();
+        shpEntity.type = 'FeatureCollection';
+        shpEntity.features = [];
+        let i = 0;
+        const len = geometryArray.length;
+        if (!propertiesArray) {
+            propertiesArray = [];
+        }
+        while (i < len) {
+            shpEntity.features.push({
+                type: 'Feature',
+                geometry: geometryArray[i],
+                properties: propertiesArray[i] || {}
+            });
+            i++;
+        }
+        return shpEntity;
+    };
+    /**
+     * 判断prj文件 转换shp文件
+     * @param shp
+     * @param prj
+     */
+    static parse = (shp: Uint8Array, prj: string | boolean | proj4.Converter | undefined) => {
+        //shp = toBuffer(shp);
+        //if (Buffer.isBuffer(prj)) {
+        prj = prj ? prj.toString() : false;
+        // }
+        if (typeof prj === 'string') {
+            try {
+                prj = proj4(prj);
+            } catch (e) {
+                prj = false;
+            }
+        }
+        return new ParseShp(shp, prj).rows;
     };
 }

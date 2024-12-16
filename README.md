@@ -1,17 +1,27 @@
+
+
+
+
 # Shapefile.ts
 Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapefile-js
 
-## Differ
+# Status
+<a href="https://npmjs.com/package/shapefile-ts"><img src="https://img.shields.io/npm/v/shapefile-ts.svg" alt="npm package"></a>
+<a href="https://github.com/guxin0123/shapefile-ts/actions/workflows/npm-publish.yml"><img src="https://github.com/guxin0123/shapefile-ts/actions/workflows/npm-publish.yml/badge.svg" alt="build status"></a>
+
+
+
+# Differ
 
 - No NodeBuffer error. No global error.
-
+- Zip library changed to fflate
+- Not using rollup-plugin-node-polyfills
 - Convert to typescript file
 
-- Not using rollup-plugin-node-polyfills
+# Increase
 
-- Custom zip file encoding
-
-- Zip library changed to fflate
+- Automatically decode non-utf8 text according to the browser language (zip and dbf file)
+- Custom zip and dbf file encoding
 
 
 ## Usage
@@ -50,7 +60,7 @@ or if you got the zip some other way (like the [File API](https://developer.mozi
 ```javascript
 const geojson = await shp(buffer);
 // or ZIP uses a other codepage   GB18030
-const geojson = await shp(buffer,null,"GB18030");
+const geojson = await shp(buffer,"GB18030");
 
 ```
 If there is only one shp in the zipefile it returns geojson, if there are multiple then it will be an array.  All of the geojson objects have an extra key `fileName` the value of which is the
@@ -61,12 +71,29 @@ You could also load the arraybuffers seperately:
 ```javascript
 import {ShpHelper} from 'shapefile-ts'
 
-const shpHelper = new ShpHelper();
-shpHelper.combine(shpHelper.parseShp(shpBuffer, /*optional prj str*/),shpHelper.parseDbf(dbfBuffer));
+ShpHelper.combine(ShpHelper.parseShp(shpBuffer, /*optional prj str*/),ShpHelper.parseDbf(dbfBuffer));
 
 // or umd 
-const shpHelper = new shp.ShpHelper();
-shpHelper.combine(shpHelper.parseShp(shpBuffer, /*optional prj str*/),shpHelper.parseDbf(dbfBuffer));
+shp.ShpHelper.combine(shp.ShpHelper.parseShp(shpBuffer, /*optional prj str*/),shp.ShpHelper.parseDbf(dbfBuffer));
 
 ```
+
+## on zipfiles
+
+If there is only one shp in the zipefile it returns geojson, if there are multiple then it will be an array.  All of the geojson objects have an extra key `fileName` the value of which is the
+name of the shapefile minus the extension (I.E. the part of the name that's the same for all of them).
+
+
+## Decode zip files and dbf files that do not contain cpg
+
+1. By passing in the parameters
+2. If the parameters are omitted, decode non-utf-8 text by getting the navigator.language parameter
+
+| navigator.language | TextDecoder utfLabel |
+|--------------------|----------------------|
+| 'zh-CN'            | 'GB18030',           |
+| 'zh-TW'            | 'big5',              |
+| 'ja-JP'            | 'euc-jp',            |
+| 'ko-KR'            | 'euc-KR',            |
+| 'ru'               | 'windows-1251'       |
 

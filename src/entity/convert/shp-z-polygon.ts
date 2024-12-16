@@ -4,7 +4,7 @@ export class ShpZPolygon extends ShpZPolyline{
 
 
    override parse (data: Uint8Array)  {
-        return this.polyFuncs(super.parse(data));
+        return this.polyFunc(super.parse(data));
     };
 
 }

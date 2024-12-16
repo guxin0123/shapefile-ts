@@ -1,11 +1,11 @@
 {
   "name": "shapefile-ts",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/guxin0123/shapefile-ts.git"
   },
-  "description": "Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapefile-js",
+  "description": "Browser-side shapefile.js only",
   "main": "./lib/index.esm.js",
   "module": "./lib/index.esm.js",
   "umd": "./lib/shp.umd.js",
@@ -15,7 +15,7 @@
     "/lib"
   ],
   "scripts": {
-    "test": "mocha ./test/test.js -r jsdom-global/register",
+    "test": "npm run build:es && mocha ./test/test.js -r jsdom-global/register",
     "serve": "node test/server.js",
     "clean:dist": "rimraf lib dist",
     "build:types": "tsc -b ./tsconfig.types.json",

@@ -17,16 +17,18 @@ var geo = L.geoJson({ features: [] }, {
     }
   }
 }).addTo(m);
-// //var base =  'data/htmlprj?blah=baz';
-// //var base =  'files/TM_WORLD_BORDERS_SIMPL-0.3.zip';
+//var base =  'data/htmlprj?blah=baz';
+//var base =  'files/TM_WORLD_BORDERS_SIMPL-0.3.zip';
 // var base =  '/data/qgis.zip?aaa=bbb';
 // //var base =  'http://localhost:5173/files/pandr.shp';
-// shp(base, null, "GB18030").then(function (data) {
+// shp(base,  "GB18030").then(function (data) {
 //   //console.log(data)
 //   geo.addData(data);
 // });
-// const geoJsonData = await shp("/data/export_multipointz.dbf", null, "GB18030");
+// const geoJsonData = await shp("/data/export_multipointz.dbf",  "GB18030");
 // addByGeoJsonData(geoJsonData, "codepage");
+
+console.log(await shp( '/data/noshp.zip'))
 
 
 document.getElementById("upload").addEventListener("click", () => {

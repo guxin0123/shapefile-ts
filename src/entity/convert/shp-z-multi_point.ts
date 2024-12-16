@@ -3,7 +3,7 @@ import {ShpMultiPoint} from "./shp-multi-point";
 export class ShpZMultiPoint extends ShpMultiPoint{
 
    public override parse (data: Uint8Array)  {
-       console.log("ShpZMultiPoint")
+       //console.log("ShpZMultiPoint")
        const dataView = new DataView(data.buffer);
         const geoJson = super.parse(data);
         if (!geoJson) {

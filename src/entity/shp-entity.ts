@@ -1,8 +1,11 @@
 import {ShpFeature} from "./shp-feature";
 
-export class ShpEntity{
+export class ShpEntity {
     [key: string]: any;
-    type:string;
-    features:ShpFeature[];
+
+    type: string;
+    fileName: string;
+    features: ShpFeature[];
+
 
 }

@@ -3,7 +3,7 @@ import {ShpBase} from "./shp-base";
 export class ShpMultiPoint extends ShpBase{
 
     public override parse  (data: Uint8Array) {
-        console.log("ShpMultiPoint");
+        //console.log("ShpMultiPoint");
         const dataView = new DataView(data.buffer);
         const out: { [key: string]: any } = {};
         let num = null;
@@ -13,13 +13,13 @@ export class ShpMultiPoint extends ShpBase{
             return null;
         }
 
-        const mins = this.parseCoordinate(data, 0);
-        const maxs = this.parseCoordinate(data, 16);
+        const min_s = this.parseCoordinate(data, 0);
+        const max_s = this.parseCoordinate(data, 16);
         out.bbox = [
-            mins[0],
-            mins[1],
-            maxs[0],
-            maxs[1]
+            min_s[0],
+            min_s[1],
+            max_s[0],
+            max_s[1]
         ];
         const offset = 36;
         if (num === 1) {

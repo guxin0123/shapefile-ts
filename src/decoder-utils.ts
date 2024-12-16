@@ -41,7 +41,7 @@ export class DecoderUtils {
         }
     }
 
-    static isUTF8(uint8Array) {
+    static isUTF8(uint8Array: Uint8Array) {
         const length = uint8Array.length;
         let singleByteCount = 0;
         let multiByteCount = 0;

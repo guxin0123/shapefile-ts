@@ -9,13 +9,13 @@ export class ShpPolyline extends ShpBase{
         if (!numParts) {
             return null;
         }
-        const mins = this.parseCoordinate(data, 0);
-        const maxs = this.parseCoordinate(data, 16);
+        const min_s = this.parseCoordinate(data, 0);
+        const max_s = this.parseCoordinate(data, 16);
         out.bbox = [
-            mins[0],
-            mins[1],
-            maxs[0],
-            maxs[1]
+            min_s[0],
+            min_s[1],
+            max_s[0],
+            max_s[1]
         ];
         const num = dataView.getInt32(36, true);
         let offset: number, partOffset: number;

@@ -8,7 +8,7 @@ export class ShpBase {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    public parse(data: Uint8Array){
+    public parse(_data: Uint8Array){
         console.error("no instantiation");
     }
     parseCoordinate(data: Uint8Array, offset: number) {
@@ -59,7 +59,7 @@ export class ShpBase {
         return out;
     };
 
-    polyFuncs = (out: { [x: string]: any; type?: any; coordinates?: any; }) => {
+    polyFunc = (out: { [x: string]: any; type?: any; coordinates?: any; }) => {
         if (!out) {
             return out;
         }

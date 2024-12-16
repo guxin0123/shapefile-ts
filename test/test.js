@@ -1,8 +1,6 @@
-
 import shp from '../lib/index.esm.js'
-import { should as shouldRaw, use } from 'chai';
-
-import { chaiAsPromised } from 'chai-promised';
+import {should as shouldRaw, use} from 'chai';
+import {chaiAsPromised} from 'chai-promised';
 const should = shouldRaw();
 use(chaiAsPromised);
 
@@ -18,7 +16,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(80);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(80);
         });
     });
     describe('park and rides zipped', function () {
@@ -30,7 +30,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(80);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(80);
         });
     });
     describe('senate unzipped', function () {
@@ -42,7 +44,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(40);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(40);
         });
     });
     describe('mixed case zipped', function () {
@@ -54,7 +58,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(40);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(40);
         });
     });
     describe('senate zipped', function () {
@@ -66,7 +72,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(40);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(40);
         });
     });
     describe('county unzipped', function () {
@@ -78,7 +86,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(14);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(14);
         });
     });
     describe('county zipped', function () {
@@ -97,7 +107,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(361);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(361);
         });
     });
     describe('trains zipped with query params', function () {
@@ -109,7 +121,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(361);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(361);
         });
     });
     describe('z', function () {
@@ -184,7 +198,9 @@ describe('Shp', function () {
             return pandr.should.eventually.have.property('type', 'FeatureCollection');
         });
         it('should have the right number of features', function () {
-            return pandr.then(function (a) { return a.features; }).should.eventually.have.length(2);
+            return pandr.then(function (a) {
+                return a.features;
+            }).should.eventually.have.length(2);
         });
     });
     describe('errors', function () {
@@ -208,7 +224,7 @@ describe('Shp', function () {
     describe('encoding', function () {
         it('should work for utf.zip', function () {
             return shp(localUrl + '/data/utf.zip').then(function (item) {
-                console.log(item)
+                //console.log(item)
                 item.should.contain.keys('type', 'features');
                 return item.features.map(function (feature) {
                     return feature.properties.field;
