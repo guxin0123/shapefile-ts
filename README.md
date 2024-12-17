@@ -31,11 +31,15 @@ Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapef
 
 	import shp from 'shapefile-ts';
 
+    or
+
+    import shp from 'https://unpkg.com/shapefile-ts@latest/lib/shp.esm.js'
+
 
 Or include directly in your webpage from:
 
-	//https://unpkg.com/shapefile-ts@latest/lib/shp.umd.js
-    import shp from 'https://unpkg.com/shapefile-ts@latest/dist/shp.esm.js'
+	https://unpkg.com/shapefile-ts@latest/lib/shp.umd.js
+    
 
 ## API
 
