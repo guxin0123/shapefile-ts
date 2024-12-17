@@ -1,6 +1,6 @@
 //import shp from '../src/index.ts'
 //import shp from '../src/index.ts'
-import shp from 'https://unpkg.com/shapefile-ts@latest/lib/shp.esm.js'
+import shp from 'https://unpkg.com/shapefile-ts@latest/lib/index.esm.js'
 
 // const shpHelper = new ShpHelper();
 // shpHelper.combine(shpHelper.parseShp(new Uint8Array(shpBuffer), /*optional prj str*/),shpHelper.parseDbf(new Uint8Array(dbfBuffer)));

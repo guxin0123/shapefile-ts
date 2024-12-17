@@ -33,7 +33,7 @@ Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapef
 
     or
 
-    import shp from 'https://unpkg.com/shapefile-ts@latest/lib/shp.esm.js'
+    import shp from 'https://unpkg.com/shapefile-ts@latest/lib/index.esm.js'
 
 
 Or include directly in your webpage from:
