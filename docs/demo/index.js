@@ -1,6 +1,6 @@
 //import shp from '../src/index.ts'
 //import shp from '../src/index.ts'
-import shp from 'https://unpkg.com/shapefile-ts@latest/lib/index.esm.js'
+// import shp from 'https://unpkg.com/shapefile-ts@latest/lib/index.esm.js'
 
 // const shpHelper = new ShpHelper();
 // shpHelper.combine(shpHelper.parseShp(new Uint8Array(shpBuffer), /*optional prj str*/),shpHelper.parseDbf(new Uint8Array(dbfBuffer)));
@@ -47,7 +47,7 @@ const loadUploadFile = (file, path) => {
   if (file && fileNameLower.endsWith(".zip")) {
       //loadShpFile(file, layerName);
       readUploadFile(file, async (result) => {
-          const geoJsonData = await shp(new Uint8Array(result), null, "GB18030");
+          const geoJsonData = await shp(new Uint8Array(result),  "GB18030");
           addByGeoJsonData(geoJsonData, layerName);
       });
       return;
