@@ -8,8 +8,8 @@
 let geo;
 
 function initMap() {
-    console.log('initMap');
-    console.log(document.querySelector("#map"));
+    //console.log('initMap');
+    //console.log(document.querySelector("#map"));
     const m = L.map('map').setView([34.74161249883172, 18.6328125], 2);
     geo = L.geoJson({features: []}, {
         onEachFeature: function popUp(f, l) {

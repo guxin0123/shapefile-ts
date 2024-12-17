@@ -1,6 +1,6 @@
 export interface ShpReaderObj {
     shp: ArrayBuffer;
     dbf: ArrayBuffer;
-    prj: ArrayBuffer | string;
-    cpg: ArrayBuffer | string;
+    prj: ArrayBuffer | string | undefined;
+    cpg: ArrayBuffer | string | undefined;
 }

@@ -70,11 +70,7 @@ export class ParseDbf {
         return out;
     }
 
-    static parse =  (buffer: Uint8Array , encoding: string)=> {
-        // if (buffer instanceof ArrayBuffer) {
-        //     buffer = new Uint8Array(buffer);
-        // }
-
+    static parse =  (buffer: Uint8Array , encoding?: string)=> {
         const decoder: any = DecoderUtils.createDecoder(encoding);
         const header: DbfHeader = this.readDbfHeader(<Uint8Array>buffer);
         const rowHeaders: DbfRowHeader[] = this.readDbfRowHeaders(<Uint8Array>buffer, header.headerLen - 1, decoder);

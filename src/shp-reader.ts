@@ -18,11 +18,11 @@ export class ShpReader {
             }
         }
         if (base instanceof ArrayBuffer) {
-            return this.readZipArrayBuffer(base);
+            return this.readZipArrayBuffer(base, encoding);
         }
         if (base instanceof Uint8Array) {
             //console.log("Uint8Array");
-            return this.readZipUint8Array(base);
+            return this.readZipUint8Array(base, encoding);
         }
     }
 
@@ -36,23 +36,16 @@ export class ShpReader {
         return this.readShpArrayBuffer(shpArrayBuffer, dbfArrayBuffer, prj, cpg, encoding);
     }
 
-    static async readShpBlob(shpBlob: Blob, dbfBlob?: Blob, prj?: any, cpg?: any, encoding?: string) {
-        const fileReader = new FileReader();
-        fileReader.readAsArrayBuffer(shpBlob);
-        await new Promise((resolve, reject) => {
-            fileReader.onload = resolve;
-            fileReader.onerror = reject;
-        });
-        const fileReaderShpBuffer: ArrayBuffer = fileReader.result as ArrayBuffer;
+    static async readShpBlob(shpBlob: Blob, dbfBlob?: Blob, prj?: Blob, cpg?: Blob, encoding?: string) {
+        const fileReaderShpBuffer: ArrayBuffer = await this.blobToArrayBuffer(shpBlob);
         let fileReaderDbfBuffer = undefined;
         if (dbfBlob) {
-            fileReader.readAsArrayBuffer(dbfBlob);
-            fileReaderDbfBuffer = fileReader.result as ArrayBuffer;
+            fileReaderDbfBuffer = await this.blobToArrayBuffer(dbfBlob);
         }
-        return this.readShpArrayBuffer(fileReaderShpBuffer, fileReaderDbfBuffer, prj, cpg, encoding);
+        return this.readShpArrayBuffer(fileReaderShpBuffer, fileReaderDbfBuffer, await this.blobToString(prj), await this.blobToString(cpg), encoding);
     }
 
-    static readShpArrayBuffer(shpArrayBuffer: ArrayBuffer, dbfArrayBuffer?: ArrayBuffer, prj?: any, cpg?: any, encoding?: string) {
+    static readShpArrayBuffer(shpArrayBuffer: ArrayBuffer, dbfArrayBuffer?: ArrayBuffer, prj?: string, cpg?: string, encoding?: string) {
         return this.readShpUint8Array(
             new Uint8Array(shpArrayBuffer),
             dbfArrayBuffer ? new Uint8Array(dbfArrayBuffer) : undefined,
@@ -62,7 +55,7 @@ export class ShpReader {
         )
     }
 
-    static readShpUint8Array(shpUint8Array: Uint8Array, dbfUint8Array?: Uint8Array, prj?: any, cpg?: any, encoding?: string) {
+    static readShpUint8Array(shpUint8Array: Uint8Array, dbfUint8Array?: Uint8Array, prj?: string, cpg?: string, encoding?: string) {
         const shp = ParseShp.parse(shpUint8Array, prj);
         const dbf = dbfUint8Array ? ParseDbf.parse(dbfUint8Array, cpg ? cpg : encoding) : undefined;
         return ParseShp.combine(shp, dbf);
@@ -100,13 +93,47 @@ export class ShpReader {
     }
 
     static readObjArrayBuffer(shpObj: ShpReaderObj, encoding?: string) {
+        if (shpObj.prj && (shpObj.prj instanceof ArrayBuffer)) {
+            shpObj.prj = this.arrayBufferToString(shpObj.prj);
+        }
+        if (shpObj.cpg && (shpObj.cpg instanceof ArrayBuffer)) {
+            shpObj.cpg = this.arrayBufferToString(shpObj.cpg);
+        }
+
         return this.readShpUint8Array(
             new Uint8Array(shpObj.shp),
             shpObj.dbf ? new Uint8Array(shpObj.dbf) : undefined,
-            shpObj.prj,
-            shpObj.cpg,
+            shpObj.prj ? shpObj.prj as string:undefined,
+            shpObj.cpg ? shpObj.cpg as string:undefined,
             encoding
         )
+    }
+
+    // noinspection JSUnusedLocalSymbols
+    private static async blobToArrayBuffer(blob: Blob) {
+        const fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(blob);
+        await new Promise((resolve, reject) => {
+            fileReader.onload = resolve;
+            fileReader.onerror = reject;
+        });
+        return fileReader.result as ArrayBuffer;
+    }
+
+    private static async blobToString(blob: Blob) {
+        const fileReader = new FileReader();
+        fileReader.readAsText(blob);
+        await new Promise((resolve, reject) => {
+            fileReader.onload = resolve;
+            fileReader.onerror = reject;
+        });
+        return fileReader.result as string;
+    }
+
+    // noinspection JSUnusedLocalSymbols
+    private static arrayBufferToString(arrayBuffer: ArrayBuffer) {
+        const textDecoder = new TextDecoder();
+        return textDecoder.decode(arrayBuffer);
     }
 
     /**
