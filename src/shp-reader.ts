@@ -8,8 +8,9 @@ import {ShpReaderObj} from "@/entity/shp-reader-obj";
 // noinspection JSUnusedGlobalSymbols
 export class ShpReader {
 
-    static async read(base: string | ArrayBuffer | Uint8Array, encoding: string) {
+    static async read(base: string | ArrayBuffer | Uint8Array | ShpReaderObj, encoding: string) {
         //console.log("read")
+
         if (typeof base == 'string') {
             if (this.checkSuffix(base, '.zip')) {
                 return this.readZipUrl(base, encoding);
@@ -23,6 +24,9 @@ export class ShpReader {
         if (base instanceof Uint8Array) {
             //console.log("Uint8Array");
             return this.readZipUint8Array(base, encoding);
+        }
+        if (base instanceof Object) {
+            return this.readObjArrayBuffer(base, encoding);
         }
     }
 
@@ -103,8 +107,8 @@ export class ShpReader {
         return this.readShpUint8Array(
             new Uint8Array(shpObj.shp),
             shpObj.dbf ? new Uint8Array(shpObj.dbf) : undefined,
-            shpObj.prj ? shpObj.prj as string:undefined,
-            shpObj.cpg ? shpObj.cpg as string:undefined,
+            shpObj.prj ? shpObj.prj as string : undefined,
+            shpObj.cpg ? shpObj.cpg as string : undefined,
             encoding
         )
     }
