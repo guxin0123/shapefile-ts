@@ -1,16 +1,17 @@
 //rollup.umd.config.mjs
-import { nodeResolve } from '@rollup/plugin-node-resolve';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 
 import basicConfig from './rollup.config.mjs'
 import terser from '@rollup/plugin-terser';
 import replace from '@rollup/plugin-replace'
 
 
-import { readFile } from 'fs/promises';
+import {readFile} from 'fs/promises';
+
 const pkg = JSON.parse(
-  await readFile(
-    new URL('../package.json', import.meta.url)
-  )
+    await readFile(
+        new URL('../package.json', import.meta.url)
+    )
 );
 
 const config = {
@@ -20,13 +21,13 @@ const config = {
             name: "shp",//浏览器引入的全局变量名称
             file: pkg.umd, //输出文件
             format: 'umd', //输出格式
-            exports: 'named', //导出的是全局变量命名方式
+            exports: 'default', //导出的是全局变量命名方式
             sourcemap: true,
-            //   globals: { //对被排除的依赖命名
-            //     'react': 'React', //三方库映射
-            //     'react-dom': 'ReactDOM',
-            //     'axios': 'Axios'
-            //   },
+            globals: { //对被排除的依赖命名
+                //     'react': 'React', //三方库映射
+                //     'react-dom': 'ReactDOM',
+                // 'shapeFile.default.shp': 'shp'
+            },
             plugins: [
                 terser({
                     compress: {
