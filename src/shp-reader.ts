@@ -2,6 +2,7 @@ import {ShpZip} from "@/shp-zip";
 import binaryAjax from "@/binaryajax-fetch";
 import {ParseShp} from "@/parse-shp";
 import {ParseDbf} from "@/parse-dbf";
+import {ShpReaderObj} from "@/entity/shp-reader-obj";
 
 
 // noinspection JSUnusedGlobalSymbols
@@ -71,7 +72,7 @@ export class ShpReader {
         return fetch(url, {mode: 'cors'}).then((res) => {
             return res.arrayBuffer();
         }).then((data) => {
-            return this.readZipArrayBuffer(data,encoding);
+            return this.readZipArrayBuffer(data, encoding);
         }).catch((err) => {
             console.error(url + "--" + err.statusText);
             return Promise.reject(err);
@@ -86,16 +87,26 @@ export class ShpReader {
             fileReader.onerror = reject;
         });
         const fileReaderBuffer: ArrayBuffer = fileReader.result as ArrayBuffer;
-        return this.readZipArrayBuffer(fileReaderBuffer,encoding);
+        return this.readZipArrayBuffer(fileReaderBuffer, encoding);
     }
 
     static readZipArrayBuffer(arrayBuffer: ArrayBuffer, encoding?: string) {
-        return this.readZipUint8Array(new Uint8Array(arrayBuffer),encoding);
+        return this.readZipUint8Array(new Uint8Array(arrayBuffer), encoding);
     }
 
     static readZipUint8Array(uint8Array: Uint8Array, encoding?: string) {
         const shpZip = new ShpZip(uint8Array, encoding);
         return shpZip.getGeoJson();
+    }
+
+    static readObjArrayBuffer(shpObj: ShpReaderObj, encoding?: string) {
+        return this.readShpUint8Array(
+            new Uint8Array(shpObj.shp),
+            shpObj.dbf ? new Uint8Array(shpObj.dbf) : undefined,
+            shpObj.prj,
+            shpObj.cpg,
+            encoding
+        )
     }
 
     /**
@@ -108,3 +119,4 @@ export class ShpReader {
         return url.pathname.slice(-4).toLowerCase() === suffix;
     };
 }
+

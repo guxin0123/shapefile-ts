@@ -34,7 +34,8 @@ Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapef
 
 Or include directly in your webpage from:
 
-	https://unpkg.com/shapefile-ts@latest/lib/shp.umd.js
+	//https://unpkg.com/shapefile-ts@latest/lib/shp.umd.js
+    import shp from 'https://unpkg.com/shapefile-ts@latest/dist/shp.esm.js'
 
 ## API
 
@@ -78,6 +79,29 @@ shp.ShpHelper.combine(shp.ShpHelper.parseShp(shpBuffer, /*optional prj str*/),sh
 
 ```
 
+You can pass in an object with `shp`, `dbf`, `prj`, and `cpg` properties.
+
+```javascript
+const readBlobFile = (blobFile, onSuccess) => {
+    const fileReader = new FileReader();
+    fileReader.onload = async (e) => {
+        onSuccess(e.target.result);
+    }
+    fileReader.readAsArrayBuffer(blobFile);
+}
+
+const object = {}
+object.shp = await readBlobFile(shpBlob);
+// dbf is optional, but needed if you want attributes
+object.dbf = await readBlobFile(dbfBlob);
+// prj is optional, but needed if your file is in some projection you don't want it in
+object.prj = await readBlobFile(prjBlob);
+// cpg is optional but needed if your dbf is in some weird (non utf8) encoding.
+object.cpg = await readBlobFile(cpgBlob);
+
+const geojson = await shp(object)
+```
+
 ## on zipfiles
 
 If there is only one shp in the zipefile it returns geojson, if there are multiple then it will be an array.  All of the geojson objects have an extra key `fileName` the value of which is the
@@ -91,9 +115,9 @@ name of the shapefile minus the extension (I.E. the part of the name that's the 
 
 | navigator.language | TextDecoder utfLabel |
 |--------------------|----------------------|
-| 'zh-CN'            | 'GB18030',           |
-| 'zh-TW'            | 'big5',              |
-| 'ja-JP'            | 'euc-jp',            |
-| 'ko-KR'            | 'euc-KR',            |
-| 'ru'               | 'windows-1251'       |
+| zh-CN              | GB18030              |
+| zh-TW              | big5                 |
+| ja-JP              | euc-jp               |
+| ko-KR              | euc-KR               |
+| ru                 | windows-1251         |
 
