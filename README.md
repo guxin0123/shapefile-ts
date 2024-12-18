@@ -3,22 +3,24 @@
 
 
 # Shapefile.ts
-Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapefile-js
+Browser-side shapefile.js only, based on [shapefile-js](https://github.com/calvinmetcalf/shapefile-js)
 
-# Status
+## Status
 <a href="https://npmjs.com/package/shapefile-ts"><img src="https://img.shields.io/npm/v/shapefile-ts.svg" alt="npm package"></a>
 <a href="https://github.com/guxin0123/shapefile-ts/actions/workflows/npm-publish.yml"><img src="https://github.com/guxin0123/shapefile-ts/actions/workflows/npm-publish.yml/badge.svg" alt="build status"></a>
 
+## Demo
+[Demo](https://guxin0123.github.io/shapefile-ts/demo/)
 
 
-# Differ
+## Differ
 
 - No NodeBuffer error. No global error.
 - Zip library changed to fflate
 - Not using rollup-plugin-node-polyfills
 - Convert to typescript file
 
-# Increase
+## Increase
 
 - Automatically decode non-utf8 text according to the browser language (zip and dbf file)
 - Custom zip and dbf file encoding
@@ -29,11 +31,11 @@ Browser-side shapefile.js only, based on https://github.com/calvinmetcalf/shapef
 
     npm install shapefile-ts --save
 
-	import shp from 'shapefile-ts';
+	import {shp} from 'shapefile-ts';
 
     or
 
-    import shp from 'https://unpkg.com/shapefile-ts@latest/lib/index.esm.js'
+    import {shp} from 'https://unpkg.com/shapefile-ts@latest/lib/index.esm.js'
 
 
 Or include directly in your webpage from:
