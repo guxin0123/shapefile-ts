@@ -16,6 +16,7 @@ const pkg = JSON.parse(
 
 const config = {
     ...basicConfig, //整合公共部分配置
+    input: 'src/index.umd.ts',
     output: [
         {
             name: "shp",//浏览器引入的全局变量名称

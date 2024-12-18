@@ -10,5 +10,5 @@ const shp = async function (base: string | Uint8Array, encoding?: string) {
 shp.ShpHelper = ShpHelper;
 shp.ShpReader = ShpReader;
 
-export default shp;
-export {ShpReader, ShpHelper, ParseShp, ParseDbf};
+//export default shp;
+export {shp, ShpReader, ShpHelper, ParseShp, ParseDbf};
