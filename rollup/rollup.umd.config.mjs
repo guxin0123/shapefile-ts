@@ -1,12 +1,12 @@
 //rollup.umd.config.mjs
-import {nodeResolve} from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 import basicConfig from './rollup.config.mjs'
 import terser from '@rollup/plugin-terser';
 import replace from '@rollup/plugin-replace'
+import commonjs from '@rollup/plugin-commonjs';
 
-
-import {readFile} from 'fs/promises';
+import { readFile } from 'fs/promises';
 
 const pkg = JSON.parse(
     await readFile(
@@ -42,6 +42,7 @@ const config = {
         },
     ],
     plugins: [
+        commonjs(),
         replace({
             'process.env.NODE_ENV': JSON.stringify('production'), //该插件在绑定时替换文件中的目标字符串
             preventAssignment: true
