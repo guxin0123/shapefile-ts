@@ -1,5 +1,5 @@
-import {ShpReader} from "@/shp-reader";
-import {ShpHelper} from "@/shp-helper";
+import {ShpReader} from "./shp-reader";
+import {ShpHelper} from "./shp-helper";
 import {ParseShp} from "./parse-shp";
 import {ParseDbf} from "./parse-dbf";
 

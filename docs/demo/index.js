@@ -58,6 +58,8 @@ const loadUploadFile = (file, path) => {
 
     const fileNameLower = name.toLowerCase();
     const layerName = name.split(".")[0];
+
+
     if (file && fileNameLower.endsWith(".zip")) {
         //loadShpFile(file, layerName);
         readUploadFile(file, async (result) => {

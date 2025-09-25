@@ -1,4 +1,4 @@
-import shp from '../src/index.ts'
+import { shp } from '@/src/index.ts'
 //import shp from '../src/index.ts'
 
 
@@ -28,7 +28,7 @@ var geo = L.geoJson({ features: [] }, {
 // const geoJsonData = await shp("/data/export_multipointz.dbf",  "GB18030");
 // addByGeoJsonData(geoJsonData, "codepage");
 
-console.log(await shp( '/data/noshp.zip'))
+// console.log(await shp('/data/noshp.zip'))
 
 
 document.getElementById("upload").addEventListener("click", () => {
@@ -45,12 +45,13 @@ const loadUploadFile = (file, path) => {
   const fileNameLower = name.toLowerCase();
   const layerName = name.split(".")[0];
   if (file && fileNameLower.endsWith(".zip")) {
-      //loadShpFile(file, layerName);
-      readUploadFile(file, async (result) => {
-          const geoJsonData = await shp(new Uint8Array(result), null, "GB18030");
-          addByGeoJsonData(geoJsonData, layerName);
-      });
-      return;
+    //loadShpFile(file, layerName);
+    readUploadFile(file, async (result) => {
+      const geoJsonData = await shp(new Uint8Array(result), "GB18030");
+      console.log(geoJsonData);
+      addByGeoJsonData(geoJsonData, layerName);
+    });
+    return;
   }
   alert("错误,不支持的文件格式!,关闭");
 }
@@ -58,13 +59,13 @@ const loadUploadFile = (file, path) => {
 const readUploadFile = (blobFile, onSuccess) => {
   const fileReader = new FileReader();
   fileReader.onload = async (e) => {
-      onSuccess(e.target.result);
+    onSuccess(e.target.result);
   }
   fileReader.readAsArrayBuffer(blobFile);
 }
-function addByGeoJsonData(a,b){
+function addByGeoJsonData(a, b) {
   geo.addData(a);
-  console.log("layer added name :"+b)
+  console.log("layer added name :" + b)
 }
 //传统上传方式
 function PickUploadFileLegacy(onChange, accept) {

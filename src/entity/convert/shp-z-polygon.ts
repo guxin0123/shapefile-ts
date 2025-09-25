@@ -4,7 +4,11 @@ export class ShpZPolygon extends ShpZPolyline{
 
 
    override parse (data: Uint8Array)  {
-        return this.polyFunc(super.parse(data));
+        const parsedData = super.parse(data);
+        if (!parsedData) {
+            return null;
+        }
+        return this.polyFunc(parsedData);
     };
 
 }

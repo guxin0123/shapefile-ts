@@ -7,7 +7,7 @@ export class ShpRow {
     constructor(id: number, len: number, type?: number, data?: Uint8Array) {
         this.id = id;
         this.len = len;
-        this.type = type;
-        this.data = data;
+        this.type = type || 0;
+        this.data = data || new Uint8Array();
     }
 }

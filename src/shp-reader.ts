@@ -1,8 +1,8 @@
-import {ShpZip} from "@/shp-zip";
-import binaryAjax from "@/binaryajax-fetch";
-import {ParseShp} from "@/parse-shp";
-import {ParseDbf} from "@/parse-dbf";
-import {ShpReaderObj} from "@/entity/shp-reader-obj";
+import {ShpZip} from "./shp-zip";
+import binaryAjax from "./binaryajax-fetch";
+import {ParseShp} from "./parse-shp";
+import {ParseDbf} from "./parse-dbf";
+import {ShpReaderObj} from "./entity/shp-reader-obj";
 
 
 // noinspection JSUnusedGlobalSymbols

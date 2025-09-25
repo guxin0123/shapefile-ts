@@ -1,13 +1,16 @@
 /** @type {import('vite').UserConfig} */
 import { defineConfig } from 'vite'
-import path from "path";
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
    root: "test",
    mode: 'production',
    resolve: {
       alias: {
-         "@": path.resolve(__dirname, "src"),
+         "@": fileURLToPath(new URL("src", import.meta.url)),
       }
    }
 })
+
+
+

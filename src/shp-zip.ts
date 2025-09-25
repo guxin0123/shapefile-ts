@@ -1,31 +1,31 @@
-import {unzip} from 'fflate';
-import {DecoderUtils} from "@/decoder-utils";
-import {ParseDbf} from "@/parse-dbf";
-import {ParseShp} from "@/parse-shp";
-import {ShpEntity} from "@/entity/shp-entity";
+import { unzip } from 'fflate';
+import { ParseDbf } from "./parse-dbf";
+import { ParseShp } from "./parse-shp";
+import { ShpEntity } from "./entity/shp-entity";
+import jschardet from 'jschardet'
+import { DecoderUtils } from './decoder-utils';
+
 
 
 export class ShpZip {
     private readonly zipBuffer: Uint8Array;
     private readonly decoder: any;
-
     constructor(zipFile: Uint8Array, encoding?: string) {
         this.zipBuffer = zipFile;
-        this.decoder = encoding ? DecoderUtils.createDecoder(encoding) : DecoderUtils.defaultDecoder;
+        this.decoder = DecoderUtils.getDefaultDecoder(encoding);
     }
-
     private async readZip(zipFile: Uint8Array) {
         return new Promise((resolve, reject) => {
             unzip(zipFile, (err, result) => err ? reject(err) : resolve(result));
         }).then((unzipped: any) => {
-            //auto decode file name
             const res = {};
             for (let key in unzipped) {
-                // encoding
-                // DecoderUtils.createDecoder(this.encoding)
-                const newKey = this.decoder(Uint8Array.from(Array.from(key).map(letter => letter.charCodeAt(0))))
+                const u8arr = Uint8Array.from(Array.from(key).map(letter => letter.charCodeAt(0)));
+                let result = jschardet.detect(key);
+                const newKey = result.encoding == "ascii" ? key : this.decoder.decode(u8arr);
                 res[newKey] = unzipped[key];
             }
+            //console.log(res);
             return res;
         }).then((res) => {
             const resGroup = {};
@@ -45,7 +45,7 @@ export class ShpZip {
     async getGeoJson() {
         const res: ShpEntity[] = [];
         const data = await this.readZip(this.zipBuffer);
-        //console.log(data)
+        //console.log(data);
         for (let key in data) {
             //const shp =
             if (data[key]["shp"]) {
@@ -59,6 +59,7 @@ export class ShpZip {
                 res.push(geoJson);
             }
         }
+        console.log(res);
         if (res.length == 0) {
             return Promise.reject("no shp file!");
         }

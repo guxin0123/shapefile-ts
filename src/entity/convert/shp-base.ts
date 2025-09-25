@@ -105,7 +105,7 @@ export class ShpBase {
         let sum = 0;
         let i = 1;
         const len = array.length;
-        let prev: any[], cur: any[];
+        let prev: any[], cur: any[] = [];
         while (i < len) {
             prev = cur || array[0];
             cur = array[i];

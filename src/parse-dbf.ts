@@ -1,7 +1,7 @@
 
-import {DbfHeader} from "@/entity/dbf-header";
-import {DbfRowHeader} from "@/entity/dbf-row-header";
-import {DecoderUtils} from "@/decoder-utils";
+import {DbfHeader} from "./entity/dbf-header";
+import {DbfRowHeader} from "./entity/dbf-row-header";
+import {DecoderUtils} from "./decoder-utils";
 
 export class ParseDbf {
     static readDbfHeader(data: Uint8Array): DbfHeader {

@@ -1,6 +1,6 @@
-import shp from '../lib/index.esm.js'
-import {should as shouldRaw, use} from 'chai';
-import {chaiAsPromised} from 'chai-promised';
+import { shp } from './../lib/index.esm.js'
+import { should as shouldRaw, use } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 const should = shouldRaw();
 use(chaiAsPromised);
 

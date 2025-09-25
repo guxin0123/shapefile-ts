@@ -7,6 +7,10 @@ export class DecoderUtils {
         'ru': 'windows-1251'
     }
 
+    static getDefaultDecoder(encoding?: string) {
+        return new TextDecoder(encoding ? encoding : this.defaultCodeList[navigator.language]);
+    }
+
     static regex = /^(?:ANSI\s)?(\d+)$/m;
     static defaultDecoder = (data: ArrayBuffer) => {
         const uint8Array = new Uint8Array(data)
