@@ -31,7 +31,7 @@ export class ShpZip {
             const resGroup = {};
             for (let key in res) {
                 const fileNameNoSuffix = key.substring(0, key.lastIndexOf("."));
-                const suffix = key.substring(key.lastIndexOf(".") + 1, key.length);
+                const suffix = key.substring(key.lastIndexOf(".") + 1, key.length).toLowerCase();
 
                 if (!resGroup[fileNameNoSuffix]) {
                     resGroup[fileNameNoSuffix] = {};
@@ -54,12 +54,14 @@ export class ShpZip {
                 const cpg = files["cpg"] ? new TextDecoder().decode(files["cpg"]) : undefined;
                 const shp = files["shp"] ? ParseShp.parse(files["shp"], prj) : undefined;
                 const dbf = files["dbf"] ? ParseDbf.parse(files["dbf"], cpg) : [];
+                const customStyle = files["style"] ? new TextDecoder().decode(files["style"]) : "";
                 const geoJson: ShpEntity = ParseShp.combine(shp, dbf);
                 geoJson.fileName = key;
+                geoJson.customStyle = customStyle;
                 res.push(geoJson);
             }
         }
-        console.log(res);
+        //console.log(res);
         if (res.length == 0) {
             return Promise.reject("no shp file!");
         }
